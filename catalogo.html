@@ -4,10 +4,10 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>CONERI Energías Renovables | Paneles Solares Perú | Panel Solar Lima | Paneles solares Piura</title>
+    <title>Catálogo de Productos - CONERI | Paneles Solares y Equipos Fotovoltaicos</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Panel solar piura, paneles solares peru, energias renovables, compra de paneles solares, coneri.pe," name="keywords">
-    <meta content="CONERI empresa dedicada al rubro de la energia renovable (paneles solares)" name="description">
+    <meta content="paneles solares, inversores, baterías, equipos fotovoltaicos, productos solares peru, coneri.pe" name="keywords">
+    <meta content="Catálogo completo de productos CONERI: paneles solares, inversores, baterías y accesorios para sistemas fotovoltaicos." name="description">
 
     <!-- Favicon -->
     <link href="img/iconos/logoConeri.png" rel="icon">
@@ -53,9 +53,45 @@
     <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    <!-- Firebase Config y Scripts de Proyectos -->
+    <!-- Firebase Config y Scripts de Productos -->
     <script defer src="js/firebase-config.js"></script>
-    <script defer src="js/proyectos.js"></script>
+    <script defer src="js/productos.js"></script>
+
+    <style>
+        .producto-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .producto-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .producto-imagen {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+        .producto-imagen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .producto-card:hover .producto-imagen img {
+            transform: scale(1.1);
+        }
+        .producto-precio {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00B98D;
+        }
+        .producto-specs {
+            font-size: 0.9rem;
+        }
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+    </style>
 </head>
 
 <body>
@@ -118,8 +154,8 @@
                 <a href="index.html" class="nav-item nav-link">Inicio</a>
                 <a href="about.html" class="nav-item nav-link">Nosotros</a>
                 <a href="service.html" class="nav-item nav-link">Servicios</a>
-                <a href="project.html" class="nav-item nav-link active">Proyectos</a>
-                <a href="catalogo.html" class="nav-item nav-link">Catálogo</a>
+                <a href="project.html" class="nav-item nav-link">Proyectos</a>
+                <a href="catalogo.html" class="nav-item nav-link active">Catálogo</a>
                 <!-- <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Productos</a>
                     <div class="dropdown-menu rounded-0 rounded-bottom m-0">
@@ -146,15 +182,10 @@
     <!-- Page Header Start -->
     <div class="container-fluid page-header py-5 mb-5">
         <div class="container py-5">
-            <h1 class="display-3 text-white mb-3 animated slideInDown">Proyectos</h1>
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Catálogo de Productos</h1>
             <nav aria-label="breadcrumb animated slideInDown">
-                <!-- <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
-                    <li class="breadcrumb-item text-white active" aria-current="page">Projects</li>
-                </ol> -->
                 <p class="breadcrumb text-white">
-                    "Con orgullo podemos decir que hemos logrado culminar numerosos proyectos de energías renovables con éxito, brindando soluciones innovadoras y eficientes a nuestros clientes y contribuyendo al cuidado del planeta. ¡Únete a nuestra lista de clientes satisfechos y vive la experiencia de un proyecto exitoso con nosotros!"
+                    "Descubre nuestra amplia gama de productos para sistemas fotovoltaicos: paneles solares de alta eficiencia, inversores de última generación, baterías de almacenamiento y todos los accesorios que necesitas para tu proyecto de energía renovable. Calidad garantizada y asesoría técnica especializada."
                 </p>
             </nav>
         </div>
@@ -162,34 +193,50 @@
     <!-- Page Header End -->
 
 
-    <!-- Projects Start -->
+    <!-- Catálogo Start -->
     <div class="container-xxl py-5">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
                 <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
-                <h1 class="display-5 mb-5">Nuestros Proyectos</h1>
+                <h1 class="display-5 mb-4">Nuestros Productos</h1>
             </div>
+
+            <!-- Barra de Búsqueda -->
+            <div class="search-box wow fadeInUp" data-wow-delay="0.2s">
+                <div class="input-group mb-4">
+                    <input type="text" class="form-control" id="buscar-producto" placeholder="Buscar productos...">
+                    <span class="input-group-text"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+
+            <!-- Filtros de Categorías -->
             <div class="row mt-n2">
                 <div class="col-12 text-center">
-                    <ul class="list-inline mb-5 portfolio-flters" id="portfolio-flters">
+                    <ul class="list-inline mb-5 catalogo-filters" id="catalogo-filters">
                         <li class="mx-2 active filter-active" data-filter="*">Todos</li>
-                        <li class="mx-2" data-filter=".first">Proyectos culminados</li>
-                        <li class="mx-2" data-filter=".second">Proyectos en marcha</li>
+                        <li class="mx-2" data-filter=".paneles">Paneles Solares</li>
+                        <li class="mx-2" data-filter=".inversores">Inversores</li>
+                        <li class="mx-2" data-filter=".baterias">Baterías</li>
+                        <li class="mx-2" data-filter=".estructuras">Estructuras</li>
+                        <li class="mx-2" data-filter=".cables">Cables</li>
+                        <li class="mx-2" data-filter=".bombas">Bombas</li>
+                        <li class="mx-2" data-filter=".accesorios">Accesorios</li>
                     </ul>
                 </div>
             </div>
-            <!-- Contenedor dinámico de proyectos -->
-            <div class="row g-4 portfolio-container" id="proyectos-container">
-                <!-- Los proyectos se cargarán dinámicamente desde Firestore -->
+
+            <!-- Contenedor dinámico de productos -->
+            <div class="row g-4 productos-container" id="productos-container">
+                <!-- Los productos se cargarán dinámicamente desde Firestore -->
                 <div class="col-12 text-center">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando proyectos...</span>
+                        <span class="visually-hidden">Cargando productos...</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Projects End -->
+    <!-- Catálogo End -->
         
 
  <!-- Footer Start -->

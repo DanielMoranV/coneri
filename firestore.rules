@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Reglas para la colección de proyectos
+    match /proyectos/{proyectoId} {
+      // Permitir lectura pública de proyectos activos
+      allow read: if resource.data.activo == true;
+
+      // Solo usuarios autenticados pueden escribir, actualizar y eliminar
+      allow create, update, delete: if request.auth != null;
+    }
+
+    // Reglas para la colección de productos
+    match /productos/{productoId} {
+      // Permitir lectura pública de productos activos
+      allow read: if resource.data.activo == true;
+
+      // Solo usuarios autenticados pueden escribir, actualizar y eliminar
+      allow create, update, delete: if request.auth != null;
+    }
+
+    // Regla por defecto: denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
