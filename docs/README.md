@@ -72,6 +72,17 @@ Problemas comunes y sus soluciones.
 
 ---
 
+### 🧹 Mantenimiento
+Scripts y guías para mantener el proyecto optimizado.
+
+- **[Limpiar Imágenes Huérfanas](./mantenimiento/LIMPIAR_IMAGENES_HUERFANAS.md)**
+  - Script local para limpiar imágenes no usadas en Cloudinary
+  - Identificar imágenes huérfanas automáticamente
+  - Liberar espacio y optimizar storage
+  - Alternativa gratuita a Cloud Functions
+
+---
+
 ## 🗂️ Estructura del Proyecto
 
 ```

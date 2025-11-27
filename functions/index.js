@@ -3,6 +3,9 @@
  * Manejo de eliminación de imágenes en Cloudinary
  */
 
+// Cargar variables de entorno desde .env
+require('dotenv').config();
+
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const cloudinary = require('cloudinary').v2;
@@ -12,9 +15,9 @@ admin.initializeApp();
 
 // Configurar Cloudinary con variables de entorno
 cloudinary.config({
-  cloud_name: functions.config().cloudinary.cloud_name,
-  api_key: functions.config().cloudinary.api_key,
-  api_secret: functions.config().cloudinary.api_secret
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 /**

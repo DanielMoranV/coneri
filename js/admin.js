@@ -76,6 +76,103 @@ function cerrarSesion() {
 }
 
 /**
+ * Mostrar modal de cambiar contraseña
+ */
+function mostrarCambiarPassword() {
+    // Limpiar formulario
+    document.getElementById('form-cambiar-password').reset();
+    document.getElementById('password-error').style.display = 'none';
+    document.getElementById('password-success').style.display = 'none';
+
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('modal-cambiar-password'));
+    modal.show();
+}
+
+/**
+ * Cambiar contraseña
+ */
+async function cambiarPassword(e) {
+    e.preventDefault();
+
+    const passwordActual = document.getElementById('password-actual').value;
+    const passwordNueva = document.getElementById('password-nueva').value;
+    const passwordConfirmar = document.getElementById('password-confirmar').value;
+    const btnCambiar = document.getElementById('btn-cambiar-password');
+    const errorDiv = document.getElementById('password-error');
+    const successDiv = document.getElementById('password-success');
+
+    // Ocultar mensajes previos
+    errorDiv.style.display = 'none';
+    successDiv.style.display = 'none';
+
+    // Validar que las contraseñas coincidan
+    if (passwordNueva !== passwordConfirmar) {
+        errorDiv.textContent = 'Las contraseñas no coinciden';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    // Validar longitud mínima
+    if (passwordNueva.length < 6) {
+        errorDiv.textContent = 'La contraseña debe tener al menos 6 caracteres';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    // Deshabilitar botón
+    btnCambiar.disabled = true;
+    btnCambiar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Cambiando contraseña...';
+
+    try {
+        const user = auth.currentUser;
+
+        // Reautenticar usuario con contraseña actual
+        const credential = firebase.auth.EmailAuthProvider.credential(
+            user.email,
+            passwordActual
+        );
+
+        await user.reauthenticateWithCredential(credential);
+
+        // Cambiar contraseña
+        await user.updatePassword(passwordNueva);
+
+        // Mostrar mensaje de éxito
+        successDiv.innerHTML = '<i class="fa fa-check-circle me-2"></i>Contraseña actualizada correctamente';
+        successDiv.style.display = 'block';
+
+        // Limpiar formulario
+        document.getElementById('form-cambiar-password').reset();
+
+        // Cerrar modal después de 2 segundos
+        setTimeout(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-cambiar-password'));
+            modal.hide();
+        }, 2000);
+
+    } catch (error) {
+        console.error('Error al cambiar contraseña:', error);
+
+        let mensajeError = 'Error al cambiar la contraseña';
+
+        if (error.code === 'auth/wrong-password') {
+            mensajeError = 'La contraseña actual es incorrecta';
+        } else if (error.code === 'auth/weak-password') {
+            mensajeError = 'La contraseña es demasiado débil. Usa al menos 6 caracteres';
+        } else if (error.code === 'auth/requires-recent-login') {
+            mensajeError = 'Por seguridad, debes cerrar sesión e iniciar sesión nuevamente antes de cambiar tu contraseña';
+        }
+
+        errorDiv.textContent = mensajeError;
+        errorDiv.style.display = 'block';
+    } finally {
+        btnCambiar.disabled = false;
+        btnCambiar.innerHTML = '<i class="fa fa-save me-2"></i>Cambiar Contraseña';
+    }
+}
+
+/**
  * Obtener mensaje de error amigable
  */
 function obtenerMensajeError(codigo) {
@@ -86,7 +183,8 @@ function obtenerMensajeError(codigo) {
         'auth/wrong-password': 'Contraseña incorrecta',
         'auth/email-already-in-use': 'El correo ya está en uso',
         'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres',
-        'auth/network-request-failed': 'Error de conexión. Verifica tu internet.'
+        'auth/network-request-failed': 'Error de conexión. Verifica tu internet.',
+        'auth/requires-recent-login': 'Debes iniciar sesión nuevamente para realizar esta acción'
     };
     return errores[codigo] || 'Error al procesar la solicitud';
 }
@@ -609,5 +707,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const formProducto = document.getElementById('form-producto');
     if (formProducto) {
         formProducto.addEventListener('submit', guardarProducto);
+    }
+
+    // Form cambiar contraseña
+    const formCambiarPassword = document.getElementById('form-cambiar-password');
+    if (formCambiarPassword) {
+        formCambiarPassword.addEventListener('submit', cambiarPassword);
     }
 });

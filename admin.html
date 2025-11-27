@@ -851,6 +851,9 @@
                     <a href="index.html" class="btn btn-light me-2" target="_blank">
                         <i class="fa fa-external-link-alt me-2"></i>Ver Sitio
                     </a>
+                    <button onclick="mostrarCambiarPassword()" class="btn btn-outline-primary me-2">
+                        <i class="fa fa-key me-2"></i>Cambiar Contraseña
+                    </button>
                     <button onclick="cerrarSesion()" class="btn btn-danger">
                         <i class="fa fa-sign-out-alt me-2"></i>Cerrar Sesión
                     </button>
@@ -1125,6 +1128,72 @@
                         </button>
                         <button type="submit" class="btn btn-primary" id="btn-guardar-producto">
                             <i class="fa fa-save me-2"></i>Guardar Producto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cambiar Contraseña -->
+    <div class="modal fade" id="modal-cambiar-password" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa fa-key me-2"></i>Cambiar Contraseña
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="form-cambiar-password">
+                    <div class="modal-body">
+                        <div id="password-error" class="alert alert-danger" style="display: none;"></div>
+                        <div id="password-success" class="alert alert-success" style="display: none;"></div>
+
+                        <div class="mb-4">
+                            <label for="password-actual" class="form-label">
+                                <i class="fa fa-lock me-2 text-primary"></i>Contraseña Actual *
+                            </label>
+                            <input type="password" class="form-control" id="password-actual" placeholder="Ingresa tu contraseña actual" required>
+                            <small class="text-muted">
+                                <i class="fa fa-info-circle me-1"></i>Por seguridad, necesitamos verificar tu identidad
+                            </small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password-nueva" class="form-label">
+                                <i class="fa fa-key me-2 text-primary"></i>Nueva Contraseña *
+                            </label>
+                            <input type="password" class="form-control" id="password-nueva" placeholder="Mínimo 6 caracteres" required minlength="6">
+                            <small class="text-muted">
+                                <i class="fa fa-shield-alt me-1"></i>Mínimo 6 caracteres
+                            </small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password-confirmar" class="form-label">
+                                <i class="fa fa-check-circle me-2 text-primary"></i>Confirmar Nueva Contraseña *
+                            </label>
+                            <input type="password" class="form-control" id="password-confirmar" placeholder="Repite la nueva contraseña" required minlength="6">
+                        </div>
+
+                        <div class="alert alert-info" style="background: rgba(0, 185, 141, 0.1); border-left: 4px solid var(--primary-color);">
+                            <i class="fa fa-lightbulb me-2"></i>
+                            <strong>Consejos de seguridad:</strong>
+                            <ul class="mb-0 mt-2" style="font-size: 0.9rem;">
+                                <li>Usa al menos 8 caracteres</li>
+                                <li>Combina letras, números y símbolos</li>
+                                <li>No uses información personal</li>
+                                <li>Actualiza tu contraseña periódicamente</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btn-cambiar-password">
+                            <i class="fa fa-save me-2"></i>Cambiar Contraseña
                         </button>
                     </div>
                 </form>

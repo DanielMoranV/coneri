@@ -1,77 +1,166 @@
-✅ Implementación Completada
+# 🔥 Firebase Cloud Functions - CONERI
 
-📁 Archivos Creados/Modificados:
+Cloud Functions para gestión automática de imágenes en Cloudinary.
 
-1. functions/ (nuevo directorio)
+---
 
+## ✅ Funcionalidades Implementadas
 
-    - package.json - Dependencias para Cloud Functions
-    - index.js - 6 funciones Cloud implementadas
-    - .gitignore - Ignora node_modules y archivos sensibles
-
-2. firebase.json - Actualizado para incluir configuración de Functions
-3. js/admin-cloudinary.js - Agregadas funciones:
-
-
-    - extraerPublicIdDeUrl() - Extrae el public_id de URLs de Cloudinary
-    - eliminarImagenCloudinary() - Elimina una imagen vía Cloud Function
-    - eliminarImagenesCloudinary() - Elimina múltiples imágenes
-
-4. js/admin.js - Actualizado:
-
-
-    - eliminarImagenTemporal() - Ahora elimina también de Cloudinary (línea 545)
-    - eliminarProyecto() - Mensaje actualizado indicando eliminación automática (línea 240)
-    - eliminarProducto() - Mensaje actualizado indicando eliminación automática (línea 417)
-
-5. CONFIGURAR_ELIMINACION_CLOUDINARY.md - Guía completa de configuración y deployment
-
-🎯 Funcionalidades Implementadas:
-
-1. Eliminación Manual (eliminarImagenTemporal)
-
+### 1. **Eliminación Manual de Imágenes Temporales**
 Cuando un usuario hace clic en la "X" de una imagen durante la edición, se elimina inmediatamente de Cloudinary.
 
-2. Triggers Automáticos en Firestore:
+### 2. **Triggers Automáticos en Firestore**
+- `onEliminarProyecto` - Cuando se elimina un proyecto, todas sus imágenes se eliminan automáticamente
+- `onEliminarProducto` - Cuando se elimina un producto, todas sus imágenes se eliminan automáticamente
+- `onActualizarProyecto` - Cuando se actualiza un proyecto y se remueven imágenes, las antiguas se eliminan
+- `onActualizarProducto` - Cuando se actualiza un producto y se reemplazan imágenes, las antiguas se eliminan
 
-- onEliminarProyecto - Cuando se elimina un proyecto, todas sus imágenes se eliminan automáticamente de Cloudinary
-- onEliminarProducto - Cuando se elimina un producto, todas sus imágenes se eliminan automáticamente
-- onActualizarProyecto - Cuando se actualiza un proyecto y se remueven imágenes, las antiguas se eliminan
-- onActualizarProducto - Cuando se actualiza un producto y se reemplazan imágenes, las antiguas se eliminan
+### 3. **Funciones HTTP Callable**
+- `eliminarImagenCloudinary` - Elimina una imagen específica
+- `eliminarImagenesCloudinary` - Elimina múltiples imágenes en batch
 
-3. Funciones HTTP Callable:
+---
 
-- eliminarImagenCloudinary - Para eliminar una imagen específica
-- eliminarImagenesCloudinary - Para eliminar múltiples imágenes en batch
+## ⚙️ Configuración
 
-🚀 Próximos Pasos para Deployment:
+### **Paso 1: Configurar Variables de Entorno**
 
-1. Instalar dependencias:
-   cd functions
-   npm install
-   cd ..
+Las funciones ahora usan variables de entorno desde el archivo `.env`:
 
-2. Configurar credenciales de Cloudinary:
-   firebase functions:config:set cloudinary.cloud_name="duzzxgbxa"
-   firebase functions:config:set cloudinary.api_key="TU_API_KEY"
-   firebase functions:config:set cloudinary.api_secret="TU_API_SECRET"
+```bash
+# Copia el archivo de ejemplo
+cp .env.example .env
+```
 
-3. Desplegar las Cloud Functions:
-   firebase deploy --only functions
+Edita `functions/.env` con tus credenciales de Cloudinary:
 
-📖 Documentación Completa:
+```env
+CLOUDINARY_CLOUD_NAME=duzzxgbxa
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
+```
 
-Lee el archivo CONFIGURAR_ELIMINACION_CLOUDINARY.md que contiene:
+**🔐 IMPORTANTE:**
+- El archivo `.env` está en `.gitignore` y NO se sube a Git
+- Obtén tus credenciales en [Cloudinary Console](https://console.cloudinary.com/console)
 
-- Instrucciones paso a paso
-- Cómo obtener credenciales de Cloudinary
-- Cómo verificar que todo funciona
-- Solución de problemas comunes
-- Información sobre seguridad y costos
+### **Paso 2: Instalar Dependencias**
 
-🔒 Seguridad:
+```bash
+cd functions
+npm install
+```
 
-Las credenciales de Cloudinary (API Key y Secret) se almacenan de forma segura en Firebase Functions Config y nunca se exponen en el código del cliente. Las eliminaciones solo
-pueden ser realizadas por usuarios autenticados.
+### **Paso 3: Desplegar las Funciones**
 
-Ahora tu sistema eliminará automáticamente las imágenes de Cloudinary cuando se eliminen o actualicen proyectos y productos, manteniendo tu almacenamiento limpio y optimizado!
+```bash
+# Desde la raíz del proyecto
+firebase deploy --only functions
+```
+
+Firebase automáticamente cargará las variables de entorno desde `functions/.env`.
+
+---
+
+## 📦 Dependencias
+
+- `firebase-admin` - SDK de Firebase para Node.js
+- `firebase-functions` - Framework de Cloud Functions
+- `cloudinary` - SDK de Cloudinary
+- `dotenv` - Manejo de variables de entorno
+
+---
+
+## 🧪 Pruebas Locales
+
+```bash
+# Emulador local de funciones
+cd functions
+npm run serve
+```
+
+---
+
+## 📁 Archivos del Proyecto
+
+```
+functions/
+├── .env                  # Variables de entorno (NO en Git) ⚠️
+├── .env.example          # Plantilla de variables
+├── .gitignore            # Ignora .env y node_modules
+├── package.json          # Dependencias
+├── index.js              # Funciones Cloud implementadas
+└── README.md             # Esta documentación
+```
+
+**Archivos relacionados en el proyecto:**
+- `js/admin-cloudinary.js` - Funciones del cliente para eliminar imágenes
+- `js/admin.js` - Integración con el panel de administración
+- `docs/configuracion/CONFIGURAR_ELIMINACION_CLOUDINARY.md` - Guía completa
+
+---
+
+## 🔍 Ver Logs
+
+```bash
+# Ver logs en tiempo real
+firebase functions:log
+
+# Ver logs de una función específica
+firebase functions:log --only eliminarImagenCloudinary
+```
+
+---
+
+## ⚠️ Migración desde el Método Antiguo
+
+### ❌ Método Antiguo (Deprecado)
+```bash
+# NO USAR - Ya no funciona
+firebase functions:config:set cloudinary.cloud_name="..."
+```
+
+### ✅ Método Nuevo (Actual)
+```env
+# Usar archivo .env
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+```
+
+**¿Por qué cambió?**
+- El método `functions:config:set` está deprecado
+- Las variables de entorno son más seguras y fáciles de gestionar
+- Mejor compatibilidad con entornos locales de desarrollo
+
+---
+
+## 🔒 Seguridad
+
+- ✅ Credenciales almacenadas en `.env` (nunca en Git)
+- ✅ Funciones requieren autenticación de Firebase
+- ✅ Validación de permisos en cada operación
+- ✅ Las credenciales nunca se exponen al cliente
+
+---
+
+## 🚀 Scripts Disponibles
+
+```bash
+npm run serve    # Emulador local
+npm run deploy   # Desplegar funciones
+npm run logs     # Ver logs
+npm run shell    # Shell interactivo
+```
+
+---
+
+## 📞 Documentación Adicional
+
+- [Guía Completa de Configuración](../docs/configuracion/CONFIGURAR_ELIMINACION_CLOUDINARY.md)
+- [Documentación de Firebase Functions](https://firebase.google.com/docs/functions)
+- [Documentación de Cloudinary](https://cloudinary.com/documentation)
+- [Variables de Entorno en Firebase](https://firebase.google.com/docs/functions/config-env)
+
+---
+
+**Última actualización:** 2024-11-27
+**Versión:** 2.0 (Migrado a variables de entorno)

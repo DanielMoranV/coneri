@@ -1,0 +1,10 @@
+# Variables de entorno
+.env
+.env.local
+
+# Credenciales de Firebase
+service-account-key.json
+
+# Node modules
+node_modules/
+npm-debug.log
