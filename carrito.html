@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Carrito de Compras - CONERI | Solicitar Cotización</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="carrito de compras, cotización paneles solares, solicitar presupuesto, coneri.pe" name="keywords">
+    <meta content="Carrito de compras CONERI. Selecciona productos y solicita tu cotización personalizada." name="description">
+
+    <!-- Favicon -->
+    <link href="img/iconos/logoConeri.png" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        .carrito-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: box-shadow 0.3s;
+        }
+
+        .carrito-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .carrito-imagen {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cantidad-control {
+            width: 60px;
+            text-align: center;
+        }
+
+        .resumen-carrito {
+            position: sticky;
+            top: 100px;
+            background: white;
+            border: 2px solid #00B98D;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .carrito-vacio {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .carrito-vacio i {
+            font-size: 5rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <!-- Firebase (sin defer para garantizar orden) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Firebase Config y Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/carrito.js"></script>
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Topbar Start -->
+    <div class="container-fluid bg-dark px-5">
+        <div class="row gx-4 d-none d-lg-flex">
+            <div class="col-lg-6 text-start">
+                <div class="h-100 d-inline-flex align-items-center py-3 me-4">
+                    <div class="btn-sm-square rounded-circle bg-primary me-2">
+                        <small class="far fa-building text-white"></small>
+                    </div>
+                    <small>RUC: 20601297541</small>
+                </div>
+                <div class="h-100 d-inline-flex align-items-center py-3">
+                    <div class="btn-sm-square rounded-circle bg-primary me-2">
+                        <small class="fa fa-envelope-open text-white"></small>
+                    </div>
+                    <small>coneri.eirl@gmail.com</small>
+                </div>
+            </div>
+            <div class="col-lg-6 text-end">
+                <div class="h-100 d-inline-flex align-items-center py-3 me-4">
+                    <div class="btn-sm-square rounded-circle bg-primary me-2">
+                        <small class="fa fa-phone-alt text-white"></small>
+                    </div>
+                    <small>+51 941830829</small>
+                </div>
+                <div class="h-100 d-inline-flex align-items-center py-3">
+                    <div class="btn-sm-square rounded-circle bg-primary me-2">
+                        <small class="far fa-clock text-white"></small>
+                    </div>
+                    <small>Lun - Sab : 9AM - 9PM</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 px-4 px-lg-5">
+        <a href="index.html" class="navbar-brand d-flex align-items-center">
+            <img src="img/iconos/logoConeri.png" class="logo">
+            <h2 class="m-0 text-primary">CONERI</h2>
+        </a>
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-4 py-lg-0">
+                <a href="index.html" class="nav-item nav-link">Inicio</a>
+                <a href="about.html" class="nav-item nav-link">Nosotros</a>
+                <a href="service.html" class="nav-item nav-link">Servicios</a>
+                <a href="project.html" class="nav-item nav-link">Casos de Éxito</a>
+                <a href="catalogo.html" class="nav-item nav-link">Catálogo</a>
+                <a href="contact.html" class="nav-item nav-link">Contacto</a>
+                <a href="carrito.html" class="nav-item nav-link active position-relative">
+                    <i class="fa fa-shopping-cart"></i> Carrito
+                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill"
+                          id="carrito-contador" style="display: none; font-size: 0.7rem;">0</span>
+                </a>
+            </div>
+            <div class="h-100 d-lg-inline-flex align-items-center d-none">
+                <a class="btn btn-square rounded-circle bg-light text-primary me-2" href="https://www.facebook.com/Coneripiura" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-square rounded-circle bg-light text-primary me-2" href="https://api.whatsapp.com/send?phone=51941830829&text=Hola%20requiero%20informaci%C3%B3n%20de%20sus%20servicios%20en%20sistemas%20fotovoltaicos" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                <a class="btn btn-square rounded-circle bg-light text-primary me-2" href="https://www.linkedin.com/in/jilmer-leonel-parrilla-calle-2960b834/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                <a class="btn btn-square rounded-circle bg-light text-primary me-0" href="https://www.tiktok.com/@jilmer941830829" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Page Header Start -->
+    <div class="container-fluid page-header py-5 mb-5">
+        <div class="container py-5">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Carrito de Compras</h1>
+            <p class="text-white">Revisa tu selección y solicita una cotización personalizada</p>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+    <!-- Carrito Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Lista de productos -->
+                <div class="col-lg-8">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fa fa-shopping-cart me-2 text-primary"></i>Mis Productos</h3>
+                        <button class="btn btn-outline-danger btn-sm" onclick="limpiarCarritoUI()">
+                            <i class="fa fa-trash me-1"></i>Vaciar Carrito
+                        </button>
+                    </div>
+
+                    <div id="lista-carrito">
+                        <!-- Los items se cargarán dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Resumen -->
+                <div class="col-lg-4">
+                    <div class="resumen-carrito">
+                        <h4 class="mb-4"><i class="fa fa-file-invoice me-2"></i>Resumen</h4>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Total de productos:</span>
+                                <strong id="total-items">0</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <strong id="subtotal">S/ 0.00</strong>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <h5>Total:</h5>
+                            <h5 class="text-primary" id="total">S/ 0.00</h5>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <small><i class="fa fa-info-circle me-1"></i>Los precios son referenciales. Recibirás una cotización detallada.</small>
+                        </div>
+
+                        <button class="btn btn-success w-100 mb-2" onclick="solicitarCotizacionWhatsApp()">
+                            <i class="fab fa-whatsapp me-2"></i>Solicitar Cotización por WhatsApp
+                        </button>
+
+                        <a href="catalogo.html" class="btn btn-outline-primary w-100">
+                            <i class="fa fa-arrow-left me-2"></i>Seguir Comprando
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Carrito End -->
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-secondary footer mt-5 py-5">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-light mb-4">Dirección</h5>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Piura | Lima</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+51 941830829</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>coneri.eirl@gmail.com</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://www.facebook.com/Coneripiura" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://api.whatsapp.com/send?phone=51941830829&text=Hola%20requiero%20informaci%C3%B3n%20de%20sus%20servicios%20en%20sistemas%20fotovoltaicos" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://www.linkedin.com/in/jilmer-leonel-parrilla-calle-2960b834/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://www.tiktok.com/@jilmer941830829" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-light mb-4">Servicios</h5>
+                    <a class="btn btn-link" href="service.html">Dimensionamiento</a>
+                    <a class="btn btn-link" href="service.html">Suministro</a>
+                    <a class="btn btn-link" href="service.html">Instalación</a>
+                    <a class="btn btn-link" href="service.html">Mantenimiento</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-light mb-4">Enlaces Rápidos</h5>
+                    <a class="btn btn-link" href="about.html">Nosotros</a>
+                    <a class="btn btn-link" href="contact.html">Contacto</a>
+                    <a class="btn btn-link" href="service.html">Servicios</a>
+                    <a class="btn btn-link" href="project.html">Proyectos</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <p>"El sol es una fuente inagotable de energía, y al utilizar paneles solares estás aprovechando su poder para impulsar un futuro más limpio y sostenible."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Copyright Start -->
+    <div class="container-fluid py-4" style="background: #000000;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    &copy; <a class="border-bottom" href="https://coneri.pe/">coneri.pe</a>, Todos los derechos reservados.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="by">Made with ♥ by. <a href="https://www.linkedin.com/in/danielmoranv/" target="_blank">Daniel Moran</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Copyright End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+
+    <script>
+        // Renderizar carrito cuando cargue la página
+        document.addEventListener('DOMContentLoaded', function() {
+            renderizarCarrito();
+
+            // Ocultar spinner
+            document.getElementById('spinner').classList.remove('show');
+        });
+
+        /**
+         * Renderizar items del carrito
+         */
+        function renderizarCarrito() {
+            const listaCarrito = document.getElementById('lista-carrito');
+            const items = carritoCompras.items;
+
+            if (items.length === 0) {
+                listaCarrito.innerHTML = `
+                    <div class="carrito-vacio">
+                        <i class="fa fa-shopping-cart"></i>
+                        <h4>Tu carrito está vacío</h4>
+                        <p class="text-muted">Explora nuestro catálogo y agrega productos</p>
+                        <a href="catalogo.html" class="btn btn-primary mt-3">
+                            <i class="fa fa-box me-2"></i>Ver Catálogo
+                        </a>
+                    </div>
+                `;
+                actualizarResumen();
+                return;
+            }
+
+            listaCarrito.innerHTML = '';
+
+            items.forEach(item => {
+                const itemHTML = `
+                    <div class="carrito-item">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <img src="${item.imagen || 'img/default-producto.jpg'}"
+                                     alt="${item.nombre}"
+                                     class="carrito-imagen">
+                            </div>
+                            <div class="col-md-4">
+                                <h5 class="mb-1">${item.nombre}</h5>
+                                ${item.precio > 0 ? `<p class="text-primary mb-0">S/ ${item.precio.toFixed(2)}</p>` : '<p class="text-muted mb-0">Precio a consultar</p>'}
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="cambiarCantidad('${item.id}', -1)">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                    <input type="number" class="form-control cantidad-control"
+                                           value="${item.cantidad}"
+                                           min="1"
+                                           onchange="actualizarCantidadDirecta('${item.id}', this.value)">
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="cambiarCantidad('${item.id}', 1)">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                ${item.precio > 0 ? `<h5 class="mb-0 text-primary">S/ ${(item.precio * item.cantidad).toFixed(2)}</h5>` : '<span class="text-muted">A consultar</span>'}
+                            </div>
+                            <div class="col-md-1 text-end">
+                                <button class="btn btn-outline-danger btn-sm" onclick="eliminarItemCarrito('${item.id}')">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listaCarrito.innerHTML += itemHTML;
+            });
+
+            actualizarResumen();
+        }
+
+        /**
+         * Cambiar cantidad de un producto
+         */
+        function cambiarCantidad(productoId, cambio) {
+            const item = carritoCompras.items.find(i => i.id === productoId);
+            if (item) {
+                const nuevaCantidad = item.cantidad + cambio;
+                if (nuevaCantidad > 0) {
+                    carritoCompras.actualizarCantidad(productoId, nuevaCantidad);
+                    renderizarCarrito();
+                }
+            }
+        }
+
+        /**
+         * Actualizar cantidad directamente
+         */
+        function actualizarCantidadDirecta(productoId, cantidad) {
+            const cantidadNum = parseInt(cantidad);
+            if (cantidadNum > 0) {
+                carritoCompras.actualizarCantidad(productoId, cantidadNum);
+                renderizarCarrito();
+            }
+        }
+
+        /**
+         * Eliminar item del carrito
+         */
+        function eliminarItemCarrito(productoId) {
+            if (confirm('¿Eliminar este producto del carrito?')) {
+                carritoCompras.eliminarProducto(productoId);
+                renderizarCarrito();
+            }
+        }
+
+        /**
+         * Limpiar carrito
+         */
+        function limpiarCarritoUI() {
+            if (confirm('¿Estás seguro de vaciar el carrito?')) {
+                carritoCompras.limpiarCarrito();
+                renderizarCarrito();
+            }
+        }
+
+        /**
+         * Actualizar resumen del carrito
+         */
+        function actualizarResumen() {
+            const totalItems = carritoCompras.obtenerCantidadTotal();
+            const total = carritoCompras.obtenerTotal();
+
+            document.getElementById('total-items').textContent = totalItems;
+            document.getElementById('subtotal').textContent = `S/ ${total.toFixed(2)}`;
+            document.getElementById('total').textContent = `S/ ${total.toFixed(2)}`;
+        }
+
+        /**
+         * Solicitar cotización por WhatsApp
+         */
+        function solicitarCotizacionWhatsApp() {
+            carritoCompras.enviarWhatsApp();
+        }
+    </script>
+</body>
+
+</html>

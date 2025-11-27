@@ -234,9 +234,11 @@ async function guardarProyecto(e) {
 
 /**
  * Eliminar proyecto
+ * NOTA: Las imágenes de Cloudinary asociadas se eliminarán automáticamente
+ * mediante el trigger 'onEliminarProyecto' en Firebase Cloud Functions
  */
 async function eliminarProyecto(id) {
-    if (!confirm('¿Estás seguro de eliminar este proyecto?')) return;
+    if (!confirm('¿Estás seguro de eliminar este proyecto? Las imágenes también serán eliminadas de Cloudinary.')) return;
 
     try {
         await proyectosRef.doc(id).delete();
@@ -409,9 +411,11 @@ async function guardarProducto(e) {
 
 /**
  * Eliminar producto
+ * NOTA: Las imágenes de Cloudinary asociadas se eliminarán automáticamente
+ * mediante el trigger 'onEliminarProducto' en Firebase Cloud Functions
  */
 async function eliminarProducto(id) {
-    if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+    if (!confirm('¿Estás seguro de eliminar este producto? Las imágenes también serán eliminadas de Cloudinary.')) return;
 
     try {
         await productosRef.doc(id).delete();
@@ -475,20 +479,43 @@ async function subirImagenes(e, tipo) {
             const nombreUnico = `${tipo}/${Date.now()}_${Math.random().toString(36).substring(7)}.${extension}`;
             const storageRef = storage.ref(nombreUnico);
 
-            // Subir archivo
-            await storageRef.put(archivo);
+            // Configurar metadata para evitar problemas de CORS
+            const metadata = {
+                contentType: archivo.type,
+                customMetadata: {
+                    'uploadedBy': usuarioActual.email,
+                    'uploadedAt': new Date().toISOString()
+                }
+            };
 
-            // Obtener URL
+            // Subir archivo con metadata
+            const uploadTask = await storageRef.put(archivo, metadata);
+
+            // Obtener URL pública
             const url = await storageRef.getDownloadURL();
             imagenesTemporales.push(url);
+
+            console.log(`✅ Imagen subida: ${nombreUnico}`);
         }
 
         mostrarPreviewImagenes(imagenesTemporales, previewId);
         mostrarNotificacion('Imágenes subidas exitosamente', 'success');
 
     } catch (error) {
-        console.error('Error al subir imágenes:', error);
-        alert('Error al subir las imágenes');
+        console.error('❌ Error al subir imágenes:', error);
+
+        // Mensaje de error más detallado
+        let mensajeError = 'Error al subir las imágenes. ';
+
+        if (error.code === 'storage/unauthorized') {
+            mensajeError += 'Verifica que estés autenticado correctamente.';
+        } else if (error.message.includes('CORS')) {
+            mensajeError += 'Error de CORS. Consulta la documentación para configurar CORS en Firebase Storage.';
+        } else {
+            mensajeError += error.message;
+        }
+
+        alert(mensajeError);
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa fa-upload"></i> Subir Imágenes';
@@ -519,11 +546,29 @@ function mostrarPreviewImagenes(imagenes, containerId) {
 /**
  * Eliminar imagen temporal
  */
-function eliminarImagenTemporal(index, containerId) {
+async function eliminarImagenTemporal(index, containerId) {
     if (!confirm('¿Eliminar esta imagen?')) return;
 
+    // Obtener la URL de la imagen antes de eliminarla del array
+    const urlImagen = imagenesTemporales[index];
+
+    // Eliminar del array local
     imagenesTemporales.splice(index, 1);
     mostrarPreviewImagenes(imagenesTemporales, containerId);
+
+    // Si es una imagen de Cloudinary, eliminarla también de Cloudinary
+    if (urlImagen && urlImagen.includes('res.cloudinary.com')) {
+        try {
+            console.log('🗑️ Eliminando imagen de Cloudinary...');
+            const eliminado = await eliminarImagenCloudinary(urlImagen);
+            if (eliminado) {
+                console.log('✅ Imagen eliminada de Cloudinary exitosamente');
+            }
+        } catch (error) {
+            console.error('❌ Error al eliminar imagen de Cloudinary:', error);
+            // No mostramos error al usuario porque la imagen ya fue removida de la vista
+        }
+    }
 }
 
 // ==================== UTILIDADES ====================

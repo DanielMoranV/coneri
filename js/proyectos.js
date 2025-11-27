@@ -1,18 +1,20 @@
-// Gestión dinámica de proyectos desde Firestore
+// ============================================
+// CASOS DE ÉXITO - JAVASCRIPT SIMPLE
+// ============================================
 
 /**
  * Cargar y mostrar todos los proyectos
  */
-async function cargarProyectos() {
+async function cargarCasosExito() {
     try {
         const snapshot = await proyectosRef
             .where('activo', '==', true)
             .orderBy('fecha', 'desc')
             .get();
 
-        const contenedor = document.getElementById('proyectos-container');
+        const contenedor = document.getElementById('casos-container');
         if (!contenedor) {
-            console.error('Contenedor de proyectos no encontrado');
+            console.error('Contenedor no encontrado');
             return;
         }
 
@@ -20,8 +22,10 @@ async function cargarProyectos() {
 
         if (snapshot.empty) {
             contenedor.innerHTML = `
-                <div class="col-12 text-center">
-                    <p class="text-muted">No hay proyectos disponibles en este momento.</p>
+                <div class="casos-vacio">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>No hay proyectos disponibles</h3>
+                    <p>Pronto agregaremos nuevos casos de éxito.</p>
                 </div>
             `;
             return;
@@ -29,142 +33,254 @@ async function cargarProyectos() {
 
         snapshot.forEach((doc) => {
             const proyecto = doc.data();
-            const proyectoHTML = crearTarjetaProyecto(doc.id, proyecto);
-            contenedor.innerHTML += proyectoHTML;
+            const casoHTML = crearTarjetaCaso(doc.id, proyecto);
+            contenedor.innerHTML += casoHTML;
         });
 
-        // Reinicializar Isotope después de cargar proyectos
-        if (typeof $.fn.isotope !== 'undefined') {
-            setTimeout(() => {
-                const $container = $('.portfolio-container');
-                $container.isotope({
-                    itemSelector: '.portfolio-item',
-                    layoutMode: 'fitRows'
-                });
+        // Configurar filtros
+        configurarFiltros();
 
-                // Configurar filtros
-                $('.portfolio-flters li').on('click', function () {
-                    $('.portfolio-flters li').removeClass('filter-active');
-                    $(this).addClass('filter-active');
-
-                    const filterValue = $(this).attr('data-filter');
-                    $container.isotope({ filter: filterValue });
-                });
-            }, 100);
-        }
-
-        // Reinicializar Lightbox
-        if (typeof lightbox !== 'undefined') {
-            lightbox.option({
-                'resizeDuration': 200,
-                'wrapAround': true
-            });
-        }
+        // Inicializar galerías
+        inicializarGalerias();
 
     } catch (error) {
-        console.error('Error al cargar proyectos:', error);
-        mostrarError('Error al cargar los proyectos. Por favor, intente más tarde.');
+        console.error('Error al cargar casos:', error);
+        mostrarError();
     }
 }
 
 /**
- * Crear HTML para una tarjeta de proyecto
+ * Crear HTML para una tarjeta de caso de éxito
  */
-function crearTarjetaProyecto(id, proyecto) {
-    const categoria = proyecto.categoria || 'first';
-    const imagen = proyecto.imagenes && proyecto.imagenes.length > 0
-        ? proyecto.imagenes[0]
-        : 'img/portfolio-1.jpg';
+function crearTarjetaCaso(id, proyecto) {
+    const imagenes = proyecto.imagenes && proyecto.imagenes.length > 0
+        ? proyecto.imagenes
+        : ['img/portfolio-1.jpg'];
 
     const descripcionCorta = proyecto.descripcion
-        ? (proyecto.descripcion.length > 100
-            ? proyecto.descripcion.substring(0, 100) + '...'
+        ? (proyecto.descripcion.length > 120
+            ? proyecto.descripcion.substring(0, 120) + '...'
             : proyecto.descripcion)
         : '';
 
+    // Determinar categoría y badge
+    const categoria = proyecto.categoria || 'first';
+    let badgeClass = '';
+    let badgeText = '';
+
+    if (categoria === 'first') {
+        badgeClass = 'culminado';
+        badgeText = 'Culminado';
+    } else if (categoria === 'second') {
+        badgeClass = 'en-marcha';
+        badgeText = 'En Marcha';
+    }
+
     return `
-        <div class="col-lg-4 col-md-6 portfolio-item ${categoria} wow fadeInUp" data-wow-delay="0.1s">
-            <div class="portfolio-inner rounded">
-                <img class="img-fluid" src="${imagen}" alt="${proyecto.titulo || 'Proyecto'}">
-                <div class="portfolio-text">
-                    <h4 class="text-white mb-4">${proyecto.titulo || 'Sin título'}</h4>
-                    <p class="text-white-50 mb-4">${descripcionCorta}</p>
-                    <div class="d-flex">
-                        <a class="btn btn-lg-square rounded-circle mx-2" href="${imagen}" data-lightbox="portfolio-${id}">
-                            <i class="fa fa-eye"></i>
-                        </a>
-                        <a class="btn btn-lg-square rounded-circle mx-2" href="project-detail.html?id=${id}">
-                            <i class="fa fa-link"></i>
-                        </a>
-                    </div>
+        <div class="caso-exito-card visible" data-categoria="${badgeClass}">
+            <!-- Galería de Imágenes -->
+            <div class="caso-galeria" data-galeria="${id}">
+                <img src="${imagenes[0]}" alt="${proyecto.titulo || 'Proyecto'}" class="caso-imagen-principal">
+
+                ${badgeText ? `<div class="caso-badge ${badgeClass}">${badgeText}</div>` : ''}
+
+                ${imagenes.length > 1 ? `
+                <div class="caso-contador">
+                    <i class="fa fa-images"></i> ${imagenes.length}
                 </div>
-                ${proyecto.ubicacion ? `
-                <div class="portfolio-badge">
-                    <i class="fa fa-map-marker-alt me-2"></i>${proyecto.ubicacion}
+                <button class="galeria-prev" onclick="cambiarImagen('${id}', -1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="galeria-next" onclick="cambiarImagen('${id}', 1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="galeria-nav">
+                    ${imagenes.map((_, index) => `
+                        <span class="galeria-dot ${index === 0 ? 'active' : ''}"
+                              onclick="irAImagen('${id}', ${index})"></span>
+                    `).join('')}
                 </div>
                 ` : ''}
+
+                <!-- Datos de galería ocultos -->
+                <div style="display:none;" data-imagenes='${JSON.stringify(imagenes)}'></div>
+            </div>
+
+            <!-- Contenido -->
+            <div class="caso-contenido">
+                <h3 class="caso-titulo">${proyecto.titulo || 'Sin título'}</h3>
+
+                ${proyecto.ubicacion || proyecto.capacidad ? `
+                <div class="caso-detalles">
+                    ${proyecto.ubicacion ? `
+                    <div class="caso-detalle">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${proyecto.ubicacion}</span>
+                    </div>
+                    ` : ''}
+                    ${proyecto.capacidad ? `
+                    <div class="caso-detalle">
+                        <i class="fas fa-solar-panel"></i>
+                        <span>${proyecto.capacidad}</span>
+                    </div>
+                    ` : ''}
+                </div>
+                ` : ''}
+
+                ${descripcionCorta ? `<p class="caso-descripcion">${descripcionCorta}</p>` : ''}
+
+                <!-- Botones -->
+                <div class="caso-acciones">
+                    <a href="project-detail.html?id=${id}" class="caso-btn caso-btn-primary">
+                        <i class="fas fa-info-circle"></i> Ver Detalles
+                    </a>
+                    <a href="${imagenes[0]}" data-lightbox="proyecto-${id}" class="caso-btn caso-btn-outline">
+                        <i class="fas fa-images"></i> Galería
+                    </a>
+                    ${imagenes.slice(1).map(img => `
+                        <a href="${img}" data-lightbox="proyecto-${id}" style="display:none;"></a>
+                    `).join('')}
+                </div>
             </div>
         </div>
     `;
 }
 
 /**
- * Cargar un proyecto específico por ID
+ * Inicializar galerías de imágenes
  */
-async function cargarProyectoDetalle(proyectoId) {
-    try {
-        const doc = await proyectosRef.doc(proyectoId).get();
+function inicializarGalerias() {
+    // Guardar índice actual de cada galería
+    window.galeriaIndices = {};
 
-        if (!doc.exists) {
-            console.error('Proyecto no encontrado');
-            return null;
-        }
-
-        return { id: doc.id, ...doc.data() };
-    } catch (error) {
-        console.error('Error al cargar proyecto:', error);
-        return null;
-    }
+    document.querySelectorAll('[data-galeria]').forEach(galeria => {
+        const id = galeria.getAttribute('data-galeria');
+        window.galeriaIndices[id] = 0;
+    });
 }
 
 /**
- * Filtrar proyectos por categoría
+ * Cambiar imagen en la galería
  */
-async function filtrarProyectos(categoria) {
-    try {
-        let query = proyectosRef.where('activo', '==', true);
+function cambiarImagen(id, direccion) {
+    const galeria = document.querySelector(`[data-galeria="${id}"]`);
+    if (!galeria) return;
 
-        if (categoria && categoria !== '*') {
-            query = query.where('categoria', '==', categoria);
+    const imagenesData = galeria.querySelector('[data-imagenes]');
+    if (!imagenesData) return;
+
+    const imagenes = JSON.parse(imagenesData.getAttribute('data-imagenes'));
+    if (imagenes.length <= 1) return;
+
+    // Actualizar índice
+    let indiceActual = window.galeriaIndices[id] || 0;
+    indiceActual += direccion;
+
+    // Circular
+    if (indiceActual < 0) indiceActual = imagenes.length - 1;
+    if (indiceActual >= imagenes.length) indiceActual = 0;
+
+    window.galeriaIndices[id] = indiceActual;
+
+    // Actualizar imagen
+    const imagen = galeria.querySelector('.caso-imagen-principal');
+    imagen.src = imagenes[indiceActual];
+
+    // Actualizar dots
+    const dots = galeria.querySelectorAll('.galeria-dot');
+    dots.forEach((dot, index) => {
+        if (index === indiceActual) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
         }
+    });
+}
 
-        const snapshot = await query.orderBy('fecha', 'desc').get();
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (error) {
-        console.error('Error al filtrar proyectos:', error);
-        return [];
-    }
+/**
+ * Ir a una imagen específica
+ */
+function irAImagen(id, indice) {
+    const galeria = document.querySelector(`[data-galeria="${id}"]`);
+    if (!galeria) return;
+
+    const imagenesData = galeria.querySelector('[data-imagenes]');
+    if (!imagenesData) return;
+
+    const imagenes = JSON.parse(imagenesData.getAttribute('data-imagenes'));
+
+    window.galeriaIndices[id] = indice;
+
+    // Actualizar imagen
+    const imagen = galeria.querySelector('.caso-imagen-principal');
+    imagen.src = imagenes[indice];
+
+    // Actualizar dots
+    const dots = galeria.querySelectorAll('.galeria-dot');
+    dots.forEach((dot, idx) => {
+        if (idx === indice) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
+}
+
+/**
+ * Configurar filtros
+ */
+function configurarFiltros() {
+    const botones = document.querySelectorAll('.filtro-btn');
+
+    botones.forEach(boton => {
+        boton.addEventListener('click', function() {
+            // Actualizar botón activo
+            botones.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            // Obtener filtro
+            const filtro = this.getAttribute('data-filtro');
+
+            // Filtrar tarjetas
+            const tarjetas = document.querySelectorAll('.caso-exito-card');
+
+            tarjetas.forEach(tarjeta => {
+                const categoria = tarjeta.getAttribute('data-categoria');
+
+                if (filtro === 'todos') {
+                    tarjeta.classList.remove('oculto');
+                    tarjeta.classList.add('visible');
+                } else if (categoria === filtro) {
+                    tarjeta.classList.remove('oculto');
+                    tarjeta.classList.add('visible');
+                } else {
+                    tarjeta.classList.remove('visible');
+                    tarjeta.classList.add('oculto');
+                }
+            });
+        });
+    });
 }
 
 /**
  * Mostrar mensaje de error
  */
-function mostrarError(mensaje) {
-    const contenedor = document.getElementById('proyectos-container');
+function mostrarError() {
+    const contenedor = document.getElementById('casos-container');
     if (contenedor) {
         contenedor.innerHTML = `
-            <div class="col-12">
-                <div class="alert alert-danger" role="alert">
-                    <i class="fa fa-exclamation-triangle me-2"></i>${mensaje}
-                </div>
+            <div class="casos-vacio">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Error al cargar proyectos</h3>
+                <p>Por favor, intenta recargar la página.</p>
             </div>
         `;
     }
 }
 
-// Cargar proyectos automáticamente cuando el DOM esté listo
+// Cargar proyectos automáticamente
 document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('proyectos-container')) {
-        cargarProyectos();
+    if (document.getElementById('casos-container')) {
+        cargarCasosExito();
     }
 });

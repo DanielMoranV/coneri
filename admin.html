@@ -26,43 +26,411 @@
     <link href="css/style.css" rel="stylesheet">
 
     <style>
+        :root {
+            --primary-color: #00B98D;
+            --primary-dark: #009874;
+            --secondary-color: #0056b3;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --dark-color: #1a1a2e;
+            --light-bg: #f8f9fa;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-attachment: fixed;
+            font-family: 'Open Sans', sans-serif;
+        }
+
         .admin-container {
             min-height: 100vh;
-            padding: 20px 0;
+            padding: 0;
         }
 
+        #panel-admin {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* ===== LOGIN STYLES ===== */
         .login-box {
-            max-width: 450px;
-            margin: 100px auto;
-            padding: 30px;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+            display: flex;
+            min-height: 500px;
         }
 
-        .admin-header {
-            background: linear-gradient(to right, #00B98D, #0056b3);
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-image-section {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(0, 185, 141, 0.9) 0%, rgba(0, 86, 179, 0.9) 100%),
+                        url('img/coneri-login.jpg') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
             color: white;
-            padding: 20px;
+            position: relative;
+        }
+
+        .login-image-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 185, 141, 0.85) 0%, rgba(0, 86, 179, 0.85) 100%);
+            z-index: 1;
+        }
+
+        .login-image-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .login-image-section img {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .login-image-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .login-image-section p {
+            font-size: 1rem;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+
+        .login-form-section {
+            flex: 1;
+            padding: 35px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form-header {
+            margin-bottom: 28px;
+        }
+
+        .login-form-header h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+
+        .login-form-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 185, 141, 0.1);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            padding: 14px 24px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 185, 141, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 185, 141, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* ===== ADMIN PANEL STYLES ===== */
+        .admin-header {
+            background: white;
+            color: var(--dark-color);
+            padding: 20px 28px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .admin-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
             border-radius: 10px;
-            margin-bottom: 30px;
+            padding: 8px;
+            background: linear-gradient(135deg, rgba(0, 185, 141, 0.1) 0%, rgba(0, 86, 179, 0.1) 100%);
+            border: 2px solid rgba(0, 185, 141, 0.2);
+            transition: var(--transition);
         }
 
+        .admin-logo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 185, 141, 0.2);
+        }
+
+        .admin-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .admin-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .admin-header .btn-light {
+            background: var(--light-bg);
+            border: 2px solid #e0e0e0;
+            color: var(--dark-color);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .admin-header .btn-light:hover {
+            background: white;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .admin-header .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, var(--danger-color) 100%);
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            transition: var(--transition);
+        }
+
+        .admin-header .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        /* ===== TABS STYLES ===== */
         .admin-tabs {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 8px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
         }
 
+        .admin-tabs .nav-link {
+            border: none;
+            color: #666;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: var(--transition);
+            margin: 0 4px;
+        }
+
+        .admin-tabs .nav-link:hover {
+            color: var(--primary-color);
+            background: rgba(0, 185, 141, 0.1);
+        }
+
+        .admin-tabs .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 185, 141, 0.3);
+        }
+
+        /* ===== TABLE CONTAINER ===== */
         .table-container {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
         }
 
+        .table-container h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .table {
+            margin-top: 16px;
+        }
+
+        .table thead th {
+            background: var(--light-bg);
+            color: var(--dark-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            padding: 12px 14px;
+            border: none;
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 185, 141, 0.05);
+            transform: scale(1.01);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table tbody td {
+            padding: 12px 14px;
+            vertical-align: middle;
+            color: #555;
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge.bg-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+        }
+
+        .badge.bg-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #ff6b6b 100%) !important;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 10px 20px;
+            transition: var(--transition);
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb700 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #dc3545 100%);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+
+        /* ===== MODAL STYLES ===== */
+        .modal-content {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            padding: 20px 24px;
+        }
+
+        .modal-header .modal-title {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+
+        .modal-body {
+            padding: 28px;
+        }
+
+        .modal-footer {
+            padding: 20px 28px;
+            background: var(--light-bg);
+            border-top: 2px solid #e0e0e0;
+        }
+
+        /* ===== IMAGE PREVIEW ===== */
         .preview-imagenes {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
             margin-top: 15px;
         }
 
@@ -70,9 +438,16 @@
             position: relative;
             width: 150px;
             height: 150px;
-            border-radius: 5px;
+            border-radius: 10px;
             overflow: hidden;
-            border: 2px solid #ddd;
+            border: 3px solid #e0e0e0;
+            transition: var(--transition);
+        }
+
+        .preview-imagen:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
 
         .preview-imagen img {
@@ -83,58 +458,316 @@
 
         .btn-eliminar-imagen {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(220, 53, 69, 0.9);
+            top: 8px;
+            right: 8px;
+            background: rgba(220, 53, 69, 0.95);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .btn-eliminar-imagen:hover {
-            background: #dc3545;
+            background: var(--danger-color);
+            transform: scale(1.1);
         }
 
+        /* ===== ESPECIFICACIONES ===== */
         .especificacion-item {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
         }
 
+        /* ===== ALERTS ===== */
+        .alert {
+            border: none;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(255, 107, 107, 0.1) 100%);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        /* ===== STATS CARDS ===== */
         .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00B98D 0%, #0056b3 100%);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 24px;
+            border-radius: var(--border-radius);
             margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
         }
 
         .stats-card h3 {
             font-size: 2.5rem;
             margin-bottom: 5px;
+            font-weight: 700;
         }
 
-        .producto-card {
-            transition: transform 0.3s;
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .login-box {
+                margin: 20px;
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .login-image-section {
+                min-height: 280px;
+                padding: 30px 20px;
+            }
+
+            .login-image-section img {
+                width: 80px;
+                height: 80px;
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .login-image-section h2 {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+
+            .login-image-section p {
+                font-size: 0.95rem;
+            }
+
+            .login-form-section {
+                padding: 30px 25px;
+            }
+
+            .login-form-header h3 {
+                font-size: 1.5rem;
+            }
+
+            .admin-header {
+                padding: 16px;
+                margin-bottom: 15px;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .admin-header > div:first-child {
+                margin-bottom: 15px;
+            }
+
+            .admin-logo {
+                width: 50px;
+                height: 50px;
+            }
+
+            .admin-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .admin-tabs {
+                margin-bottom: 15px;
+            }
+
+            .table-container {
+                padding: 16px;
+            }
+
+            .table-container h3 {
+                font-size: 1.2rem;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
         }
 
-        .producto-card:hover {
-            transform: translateY(-5px);
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
-        .producto-imagen {
-            height: 200px;
-            overflow: hidden;
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
         }
 
-        .producto-imagen img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== SPINNER ===== */
+        .spinner-border {
+            animation: spin 0.75s linear infinite;
+        }
+
+        #spinner {
+            background: linear-gradient(135deg, #00B98D 0%, #0056b3 100%);
+        }
+
+        #spinner .spinner-border {
+            width: 4rem !important;
+            height: 4rem !important;
+            border-width: 0.4rem;
+            border-color: white;
+            border-right-color: transparent;
+        }
+
+        /* ===== SECONDARY BUTTON ===== */
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+            color: white;
+        }
+
+        /* ===== OUTLINE BUTTON ===== */
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 185, 141, 0.3);
+        }
+
+        /* ===== FORM CHECKS ===== */
+        .form-check-input {
+            width: 1.3em;
+            height: 1.3em;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-check-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 185, 141, 0.1);
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* ===== TEXTAREA ===== */
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ===== INPUT NUMBER ===== */
+        input[type="number"].form-control {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"].form-control::-webkit-inner-spin-button,
+        input[type="number"].form-control::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        /* ===== LOADING STATE ===== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        /* ===== SCROLL IMPROVEMENTS ===== */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ===== MODAL ANIMATIONS ===== */
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+            transform: scale(0.9);
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1);
         }
     </style>
 
@@ -142,8 +775,10 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Cloudinary Upload Widget -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -160,25 +795,43 @@
         <div id="panel-login" style="display: none;">
             <div class="container">
                 <div class="login-box">
-                    <div class="text-center mb-4">
-                        <img src="img/iconos/logoConeri.png" alt="CONERI" style="max-width: 120px;">
-                        <h2 class="mt-3">Panel de Administración</h2>
-                        <p class="text-muted">Inicia sesión para continuar</p>
+                    <!-- Sección de Imagen (Izquierda) -->
+                    <div class="login-image-section">
+                        <div class="login-image-content">
+                            <img src="img/iconos/logoConeri.png" alt="CONERI">
+                            <h2>CONERI</h2>
+                            <p>Energía Solar y Renovable</p>
+                            <p style="font-size: 0.95rem; margin-top: 20px;">Sistema de gestión de proyectos y productos solares</p>
+                        </div>
                     </div>
 
-                    <div id="login-error" class="alert alert-danger" style="display: none;"></div>
+                    <!-- Sección de Formulario (Derecha) -->
+                    <div class="login-form-section">
+                        <div class="login-form-header">
+                            <h3>Bienvenido</h3>
+                            <p>Inicia sesión en el panel de administración</p>
+                        </div>
 
-                    <form id="form-login">
-                        <div class="mb-3">
-                            <label for="login-email" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="login-email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="login-password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="login-password" required>
-                        </div>
-                        <button type="submit" id="btn-login" class="btn btn-primary w-100">Iniciar Sesión</button>
-                    </form>
+                        <div id="login-error" class="alert alert-danger" style="display: none;"></div>
+
+                        <form id="form-login">
+                            <div class="mb-3">
+                                <label for="login-email" class="form-label">
+                                    <i class="fa fa-envelope me-2"></i>Correo Electrónico
+                                </label>
+                                <input type="email" class="form-control" id="login-email" placeholder="correo@ejemplo.com" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="login-password" class="form-label">
+                                    <i class="fa fa-lock me-2"></i>Contraseña
+                                </label>
+                                <input type="password" class="form-control" id="login-password" placeholder="••••••••" required>
+                            </div>
+                            <button type="submit" id="btn-login" class="btn btn-primary w-100">
+                                <i class="fa fa-sign-in-alt me-2"></i>Iniciar Sesión
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -187,9 +840,12 @@
         <div id="panel-admin" class="container" style="display: none;">
             <!-- Header -->
             <div class="admin-header d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="mb-0">Panel de Administración</h1>
-                    <p class="mb-0"><i class="fa fa-user me-2"></i><span id="usuario-email"></span></p>
+                <div class="d-flex align-items-center">
+                    <img src="img/iconos/logoConeri.png" alt="CONERI" class="admin-logo me-3">
+                    <div>
+                        <h1 class="mb-0">Panel de Administración</h1>
+                        <p class="mb-0"><i class="fa fa-user me-2"></i><span id="usuario-email"></span></p>
+                    </div>
                 </div>
                 <div>
                     <a href="index.html" class="btn btn-light me-2" target="_blank">
@@ -219,9 +875,12 @@
             <div class="tab-content" id="adminTabsContent">
                 <!-- Panel de Proyectos -->
                 <div class="tab-pane fade show active" id="proyectos-panel" role="tabpanel">
-                    <div class="table-container">
+                    <div class="table-container fade-in">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3><i class="fa fa-project-diagram me-2 text-primary"></i>Gestión de Proyectos</h3>
+                            <div>
+                                <h3 class="mb-1"><i class="fa fa-project-diagram me-2 text-primary"></i>Gestión de Proyectos</h3>
+                                <p class="text-muted mb-0" style="font-size: 0.85rem;">Administra todos tus proyectos de energía solar</p>
+                            </div>
                             <button class="btn btn-primary" onclick="nuevoProyecto()">
                                 <i class="fa fa-plus me-2"></i>Nuevo Proyecto
                             </button>
@@ -235,13 +894,14 @@
                                         <th>Ubicación</th>
                                         <th>Fecha</th>
                                         <th>Estado</th>
-                                        <th>Acciones</th>
+                                        <th style="text-align: center;">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="lista-proyectos">
                                     <tr>
-                                        <td colspan="6" class="text-center">
+                                        <td colspan="6" class="text-center" style="padding: 40px;">
                                             <div class="spinner-border text-primary" role="status"></div>
+                                            <p class="text-muted mt-2 mb-0">Cargando proyectos...</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -252,9 +912,12 @@
 
                 <!-- Panel de Productos -->
                 <div class="tab-pane fade" id="productos-panel" role="tabpanel">
-                    <div class="table-container">
+                    <div class="table-container fade-in">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3><i class="fa fa-box me-2 text-primary"></i>Gestión de Productos</h3>
+                            <div>
+                                <h3 class="mb-1"><i class="fa fa-box me-2 text-primary"></i>Gestión de Productos</h3>
+                                <p class="text-muted mb-0" style="font-size: 0.85rem;">Administra el catálogo de productos solares</p>
+                            </div>
                             <button class="btn btn-primary" onclick="nuevoProducto()">
                                 <i class="fa fa-plus me-2"></i>Nuevo Producto
                             </button>
@@ -268,13 +931,14 @@
                                         <th>Precio</th>
                                         <th>Orden</th>
                                         <th>Estado</th>
-                                        <th>Acciones</th>
+                                        <th style="text-align: center;">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="lista-productos">
                                     <tr>
-                                        <td colspan="6" class="text-center">
+                                        <td colspan="6" class="text-center" style="padding: 40px;">
                                             <div class="spinner-border text-primary" role="status"></div>
+                                            <p class="text-muted mt-2 mb-0">Cargando productos...</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -296,58 +960,73 @@
                 </div>
                 <form id="form-proyecto">
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="proyecto-titulo" class="form-label">Título del Proyecto *</label>
-                            <input type="text" class="form-control" id="proyecto-titulo" required>
+                        <div class="mb-4">
+                            <label for="proyecto-titulo" class="form-label">
+                                <i class="fa fa-heading me-2 text-primary"></i>Título del Proyecto *
+                            </label>
+                            <input type="text" class="form-control" id="proyecto-titulo" placeholder="Ej: Instalación Sistema Solar 10kW" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="proyecto-descripcion" class="form-label">Descripción *</label>
-                            <textarea class="form-control" id="proyecto-descripcion" rows="4" required></textarea>
+                        <div class="mb-4">
+                            <label for="proyecto-descripcion" class="form-label">
+                                <i class="fa fa-align-left me-2 text-primary"></i>Descripción *
+                            </label>
+                            <textarea class="form-control" id="proyecto-descripcion" rows="4" placeholder="Describe los detalles del proyecto..." required></textarea>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="proyecto-categoria" class="form-label">Categoría *</label>
+                            <div class="col-md-6 mb-4">
+                                <label for="proyecto-categoria" class="form-label">
+                                    <i class="fa fa-folder me-2 text-primary"></i>Categoría *
+                                </label>
                                 <select class="form-select" id="proyecto-categoria" required>
                                     <option value="first">Proyectos Culminados</option>
                                     <option value="second">Proyectos en Marcha</option>
                                 </select>
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="proyecto-ubicacion" class="form-label">Ubicación</label>
+                            <div class="col-md-6 mb-4">
+                                <label for="proyecto-ubicacion" class="form-label">
+                                    <i class="fa fa-map-marker-alt me-2 text-primary"></i>Ubicación
+                                </label>
                                 <input type="text" class="form-control" id="proyecto-ubicacion" placeholder="Ej: Palo Blanco, Piura">
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="proyecto-cliente" class="form-label">Cliente</label>
+                        <div class="mb-4">
+                            <label for="proyecto-cliente" class="form-label">
+                                <i class="fa fa-user me-2 text-primary"></i>Cliente
+                            </label>
                             <input type="text" class="form-control" id="proyecto-cliente" placeholder="Nombre del cliente (opcional)">
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Imágenes del Proyecto</label>
-                            <div class="input-group">
-                                <input type="file" class="form-control" id="proyecto-imagenes" accept="image/*" multiple onchange="subirImagenes(event, 'proyecto')">
-                                <button type="button" class="btn btn-primary" id="btn-subir-img-proyecto" onclick="document.getElementById('proyecto-imagenes').click()">
-                                    <i class="fa fa-upload"></i> Subir Imágenes
-                                </button>
-                            </div>
-                            <small class="text-muted">Formatos: JPG, PNG, WEBP. Máximo 5MB por imagen.</small>
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fa fa-images me-2 text-primary"></i>Imágenes del Proyecto
+                            </label>
+                            <button type="button" class="btn btn-primary w-100" onclick="abrirCloudinaryWidget('proyecto')">
+                                <i class="fa fa-cloud-upload-alt me-2"></i>Subir Imágenes (Cloudinary)
+                            </button>
+                            <small class="text-muted d-block mt-2">
+                                <i class="fa fa-info-circle me-1"></i>Formatos: JPG, PNG, WEBP. Máximo 5MB por imagen. Gratis hasta 25GB.
+                            </small>
                             <div id="preview-imagenes-proyecto" class="preview-imagenes"></div>
                         </div>
 
-                        <div class="form-check">
+                        <div class="form-check" style="background: rgba(0, 185, 141, 0.1); padding: 12px; border-radius: 8px;">
                             <input class="form-check-input" type="checkbox" id="proyecto-activo" checked>
-                            <label class="form-check-label" for="proyecto-activo">
-                                Proyecto activo (visible en el sitio web)
+                            <label class="form-check-label" for="proyecto-activo" style="font-weight: 600;">
+                                <i class="fa fa-eye me-2"></i>Proyecto activo (visible en el sitio web)
                             </label>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" id="btn-guardar-proyecto">Guardar Proyecto</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btn-guardar-proyecto">
+                            <i class="fa fa-save me-2"></i>Guardar Proyecto
+                        </button>
                     </div>
                 </form>
             </div>
@@ -364,19 +1043,25 @@
                 </div>
                 <form id="form-producto">
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="producto-nombre" class="form-label">Nombre del Producto *</label>
-                            <input type="text" class="form-control" id="producto-nombre" required>
+                        <div class="mb-4">
+                            <label for="producto-nombre" class="form-label">
+                                <i class="fa fa-box me-2 text-primary"></i>Nombre del Producto *
+                            </label>
+                            <input type="text" class="form-control" id="producto-nombre" placeholder="Ej: Panel Solar 450W Monocristalino" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="producto-descripcion" class="form-label">Descripción *</label>
-                            <textarea class="form-control" id="producto-descripcion" rows="4" required></textarea>
+                        <div class="mb-4">
+                            <label for="producto-descripcion" class="form-label">
+                                <i class="fa fa-align-left me-2 text-primary"></i>Descripción *
+                            </label>
+                            <textarea class="form-control" id="producto-descripcion" rows="4" placeholder="Describe las características del producto..." required></textarea>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="producto-categoria" class="form-label">Categoría *</label>
+                            <div class="col-md-6 mb-4">
+                                <label for="producto-categoria" class="form-label">
+                                    <i class="fa fa-folder me-2 text-primary"></i>Categoría *
+                                </label>
                                 <select class="form-select" id="producto-categoria" required>
                                     <option value="paneles">Paneles Solares</option>
                                     <option value="inversores">Inversores</option>
@@ -389,47 +1074,58 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-3 mb-3">
-                                <label for="producto-precio" class="form-label">Precio (S/)</label>
-                                <input type="number" class="form-control" id="producto-precio" step="0.01" placeholder="Opcional">
+                            <div class="col-md-3 mb-4">
+                                <label for="producto-precio" class="form-label">
+                                    <i class="fa fa-tag me-2 text-primary"></i>Precio (S/)
+                                </label>
+                                <input type="number" class="form-control" id="producto-precio" step="0.01" placeholder="0.00">
                             </div>
 
-                            <div class="col-md-3 mb-3">
-                                <label for="producto-orden" class="form-label">Orden</label>
+                            <div class="col-md-3 mb-4">
+                                <label for="producto-orden" class="form-label">
+                                    <i class="fa fa-sort-numeric-down me-2 text-primary"></i>Orden
+                                </label>
                                 <input type="number" class="form-control" id="producto-orden" value="0">
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Especificaciones Técnicas</label>
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fa fa-list me-2 text-primary"></i>Especificaciones Técnicas
+                            </label>
                             <div id="especificaciones-container"></div>
                             <button type="button" class="btn btn-sm btn-outline-primary" onclick="agregarEspecificacion()">
                                 <i class="fa fa-plus me-1"></i>Agregar Especificación
                             </button>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Imágenes del Producto</label>
-                            <div class="input-group">
-                                <input type="file" class="form-control" id="producto-imagenes" accept="image/*" multiple onchange="subirImagenes(event, 'producto')">
-                                <button type="button" class="btn btn-primary" id="btn-subir-img-producto" onclick="document.getElementById('producto-imagenes').click()">
-                                    <i class="fa fa-upload"></i> Subir Imágenes
-                                </button>
-                            </div>
-                            <small class="text-muted">Formatos: JPG, PNG, WEBP. Máximo 5MB por imagen.</small>
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fa fa-images me-2 text-primary"></i>Imágenes del Producto
+                            </label>
+                            <button type="button" class="btn btn-primary w-100" onclick="abrirCloudinaryWidget('producto')">
+                                <i class="fa fa-cloud-upload-alt me-2"></i>Subir Imágenes (Cloudinary)
+                            </button>
+                            <small class="text-muted d-block mt-2">
+                                <i class="fa fa-info-circle me-1"></i>Formatos: JPG, PNG, WEBP. Máximo 5MB por imagen. Gratis hasta 25GB.
+                            </small>
                             <div id="preview-imagenes-producto" class="preview-imagenes"></div>
                         </div>
 
-                        <div class="form-check">
+                        <div class="form-check" style="background: rgba(0, 185, 141, 0.1); padding: 12px; border-radius: 8px;">
                             <input class="form-check-input" type="checkbox" id="producto-activo" checked>
-                            <label class="form-check-label" for="producto-activo">
-                                Producto activo (visible en el catálogo)
+                            <label class="form-check-label" for="producto-activo" style="font-weight: 600;">
+                                <i class="fa fa-eye me-2"></i>Producto activo (visible en el catálogo)
                             </label>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" id="btn-guardar-producto">Guardar Producto</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btn-guardar-producto">
+                            <i class="fa fa-save me-2"></i>Guardar Producto
+                        </button>
                     </div>
                 </form>
             </div>
@@ -440,9 +1136,12 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Firebase Config and Admin Scripts -->
+    <!-- Firebase Config -->
     <script src="js/firebase-config.js"></script>
+
+    <!-- Admin Scripts -->
     <script src="js/admin.js"></script>
+    <script src="js/admin-cloudinary.js"></script>
 
     <script>
         // Ocultar spinner cuando cargue

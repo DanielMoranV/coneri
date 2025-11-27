@@ -15,7 +15,7 @@ firebase.initializeApp(firebaseConfig);
 
 // Inicializar servicios
 const db = firebase.firestore();
-const storage = firebase.storage();
+// const storage = firebase.storage(); // Ya no usamos Firebase Storage, ahora usamos Cloudinary
 const auth = firebase.auth();
 const realtimeDb = firebase.database();
 

@@ -19,7 +19,6 @@
 
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Libraries Stylesheet -->
@@ -45,51 +44,817 @@
     <script defer src="lib/isotope/isotope.pkgd.min.js"></script>
     <script defer src="lib/lightbox/js/lightbox.min.js"></script>
 
-    <!-- Template Javascript -->
+    <!-- Firebase (PRIMERO, sin defer para garantizar orden) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Firebase Config (SEGUNDO) -->
+    <script src="js/firebase-config.js"></script>
+
+    <!-- Scripts de Carrito y Productos (TERCERO) -->
+    <script src="js/carrito.js"></script>
+    <script src="js/productos.js"></script>
+
+    <!-- Template Javascript (ÚLTIMO) -->
     <script defer src="js/main.js"></script>
 
-    <!-- Firebase -->
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <!-- Firebase Config y Scripts de Productos -->
-    <script defer src="js/firebase-config.js"></script>
-    <script defer src="js/productos.js"></script>
-
     <style>
+        /* Reset y Variables */
+        :root {
+            --primary: #65B530;
+            --primary-dark: #4a8c23;
+            --secondary: #333;
+            --light: #f8f9fa;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: #f5f7fa;
+        }
+
+        /* Header Minimalista */
+        .header-catalogo {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo-link {
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        .logo-link:hover {
+            opacity: 0.8;
+        }
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: none;
+        }
+        @media (min-width: 768px) {
+            .logo-text {
+                display: inline;
+            }
+        }
+        .btn-contact {
+            background: #25d366;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-contact:hover {
+            background: #20ba5a;
+            color: white;
+            transform: scale(1.05);
+        }
+        .btn-contact-mobile {
+            background: #25d366;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-contact-mobile:hover {
+            background: #20ba5a;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Hero de Búsqueda */
+        .hero-busqueda {
+            background:
+                linear-gradient(135deg, rgba(101, 181, 48, 0.65) 0%, rgba(74, 140, 35, 0.75) 100%),
+                url('img/carousel-1.jpg') center center / cover no-repeat;
+            padding: 40px 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-busqueda::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(101, 181, 48, 0.15) 0%, rgba(74, 140, 35, 0.25) 100%);
+            z-index: 1;
+        }
+        .hero-busqueda > * {
+            position: relative;
+            z-index: 2;
+        }
+        .titulo-principal {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .subtitulo-principal {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        /* Ajuste de títulos para móviles */
+        @media (max-width: 576px) {
+            .titulo-principal {
+                font-size: 1.75rem;
+            }
+            .subtitulo-principal {
+                font-size: 0.95rem;
+            }
+            .hero-busqueda {
+                padding: 30px 15px;
+            }
+        }
+        .search-principal {
+            background: white;
+            border-radius: 50px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .search-icon {
+            color: #999;
+            margin-left: 20px;
+            font-size: 20px;
+        }
+        .form-control-search {
+            border: none;
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 16px;
+            outline: none;
+            background: transparent;
+        }
+        .btn-search {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-search:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* Ajuste de barra de búsqueda para móviles */
+        @media (max-width: 576px) {
+            .search-principal {
+                flex-direction: column;
+                padding: 10px;
+                border-radius: 20px;
+            }
+            .search-icon {
+                margin: 0;
+                margin-top: 10px;
+            }
+            .form-control-search {
+                padding: 12px 15px;
+                font-size: 14px;
+                text-align: center;
+            }
+            .btn-search {
+                padding: 12px 25px;
+                width: 100%;
+                margin-top: 10px;
+                font-size: 14px;
+            }
+        }
+
+        @media (min-width: 577px) and (max-width: 768px) {
+            .btn-search {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+            .form-control-search {
+                font-size: 14px;
+            }
+        }
+
+        /* Filtros Sticky */
+        .filtros-sticky {
+            background: white;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 80px;
+            z-index: 100;
+        }
+        .filtros-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 0 20px;
+            scrollbar-width: none;
+        }
+        .filtros-container::-webkit-scrollbar {
+            display: none;
+        }
+        .filter-chip {
+            background: white;
+            border: 2px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #666;
+        }
+        .filter-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .filter-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .filter-chip i {
+            font-size: 18px;
+        }
+
+        /* Ajuste de filtros para diferentes pantallas */
+        @media (max-width: 576px) {
+            .filtros-sticky {
+                top: 60px;
+                padding: 10px 0;
+                margin-bottom: 20px;
+            }
+            .filtros-container {
+                padding: 0 10px;
+                gap: 8px;
+            }
+            .filter-chip {
+                padding: 12px 14px;
+                font-size: 13px;
+                min-width: 48px;
+                justify-content: center;
+            }
+            .filter-chip i {
+                font-size: 18px;
+                margin: 0;
+            }
+            /* Ocultar texto en móviles, solo mostrar iconos */
+            .filter-chip span {
+                display: none;
+            }
+            .filter-chip {
+                gap: 0;
+            }
+        }
+
+        @media (min-width: 577px) and (max-width: 992px) {
+            .filtros-sticky {
+                top: 70px;
+            }
+            .filter-chip {
+                padding: 11px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Productos Rediseñados */
         .producto-card {
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px;
+            overflow: hidden;
+            background: white;
         }
         .producto-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(101, 181, 48, 0.15);
         }
         .producto-imagen {
-            height: 250px;
+            height: 280px;
             overflow: hidden;
             position: relative;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .producto-imagen img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
+            object-fit: contain;
+            transition: transform 0.4s ease;
+            padding: 10px;
         }
-        .producto-card:hover .producto-imagen img {
-            transform: scale(1.1);
+        .producto-imagen img:hover {
+            object-fit: contain;
+        }
+        /* Zoom solo en imágenes sin carrusel */
+        .producto-card:hover .producto-imagen > img {
+            transform: scale(1.15);
+        }
+        /* Desactivar zoom en carrusel */
+        .producto-card:hover .producto-carousel img {
+            transform: scale(1);
+        }
+
+        /* Carrusel de imágenes en productos */
+        .producto-carousel {
+            height: 100%;
+        }
+        .producto-carousel .carousel-inner,
+        .producto-carousel .carousel-item {
+            height: 100%;
+        }
+        .producto-carousel .carousel-item img {
+            height: 280px;
+            object-fit: contain;
+            padding: 10px;
+        }
+        .producto-carousel .carousel-control-prev,
+        .producto-carousel .carousel-control-next {
+            width: 40px;
+            height: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(101, 181, 48, 0.8);
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .producto-card:hover .carousel-control-prev,
+        .producto-card:hover .carousel-control-next {
+            opacity: 1;
+        }
+        .producto-carousel .carousel-control-prev {
+            left: 10px;
+        }
+        .producto-carousel .carousel-control-next {
+            right: 10px;
+        }
+        .producto-carousel .carousel-control-prev:hover,
+        .producto-carousel .carousel-control-next:hover {
+            background: rgba(101, 181, 48, 1);
+        }
+        .producto-carousel .carousel-control-prev-icon,
+        .producto-carousel .carousel-control-next-icon {
+            width: 20px;
+            height: 20px;
+        }
+        .producto-carousel .carousel-indicators {
+            bottom: 10px;
+            margin-bottom: 0;
+        }
+        .producto-carousel .carousel-indicators button {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(101, 181, 48, 0.5);
+            border: none;
+            margin: 0 4px;
+        }
+        .producto-carousel .carousel-indicators button.active {
+            background-color: #65B530;
         }
         .producto-precio {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #00B98D;
+            color: #65B530;
         }
         .producto-specs {
             font-size: 0.9rem;
         }
-        .search-box {
-            max-width: 600px;
-            margin: 0 auto 30px;
+
+        /* Grid de productos responsivo */
+        .productos-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 576px) {
+            .productos-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .producto-precio {
+                font-size: 1.3rem;
+            }
+            .producto-specs {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (min-width: 577px) and (max-width: 768px) {
+            .productos-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 992px) {
+            .productos-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 993px) and (max-width: 1200px) {
+            .productos-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1201px) {
+            .productos-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Footer Minimalista */
+        .footer-catalogo {
+            background: white;
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
+        }
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--light);
+            color: #666;
+            border-radius: 50%;
+            margin-left: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .social-link:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* CTA WhatsApp Flotante */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 180px;
+            right: 30px;
+            z-index: 999;
+        }
+        .whatsapp-button {
+            background: #25d366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            text-decoration: none;
+            animation: pulse-whatsapp 2s infinite;
+            transition: all 0.3s;
+        }
+        .whatsapp-button:hover {
+            background: #20ba5a;
+            transform: scale(1.1);
+            color: white;
+        }
+        @keyframes pulse-whatsapp {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 30px rgba(37, 211, 102, 0.6);
+            }
+        }
+
+        /* Carrito Flotante */
+        .carrito-flotante {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            z-index: 1000;
+        }
+        .carrito-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #65B530 0%, #4a8c23 100%);
+            border: none;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 8px 24px rgba(101, 181, 48, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        .carrito-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(101, 181, 48, 0.5);
+        }
+        .carrito-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+        .carrito-panel {
+            position: fixed;
+            bottom: 170px;
+            right: 30px;
+            width: 380px;
+            max-height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+        .carrito-panel.show {
+            display: flex;
+        }
+        .carrito-header {
+            background: linear-gradient(135deg, #65B530 0%, #4a8c23 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-close-carrito {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-close-carrito:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+        .carrito-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            max-height: 400px;
+        }
+        .carrito-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        .carrito-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .carrito-item-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .carrito-item-info {
+            flex: 1;
+        }
+        .carrito-item-nombre {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .carrito-item-cantidad {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn-cantidad {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        .btn-cantidad:hover {
+            background: #65B530;
+            color: white;
+            border-color: #65B530;
+        }
+        .carrito-footer {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+        .empty-cart {
+            padding: 40px 20px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 8px 24px rgba(101, 181, 48, 0.4);
+            }
+            50% {
+                box-shadow: 0 8px 32px rgba(101, 181, 48, 0.6);
+            }
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive - Elementos Flotantes y General */
+        @media (max-width: 576px) {
+            .whatsapp-float {
+                bottom: 140px;
+                right: 15px;
+            }
+            .whatsapp-button {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            .carrito-flotante {
+                bottom: 70px;
+                right: 15px;
+            }
+            .carrito-panel {
+                width: calc(100vw - 30px);
+                max-width: 100%;
+                right: 15px;
+                bottom: 140px;
+                max-height: 60vh;
+            }
+            .carrito-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            .carrito-badge {
+                width: 20px;
+                height: 20px;
+                font-size: 11px;
+            }
+            .producto-imagen {
+                height: 220px;
+            }
+            .producto-carousel .carousel-item img {
+                height: 220px;
+            }
+            .back-to-top {
+                bottom: 15px !important;
+                right: 15px !important;
+                width: 45px !important;
+                height: 45px !important;
+            }
+            .header-catalogo {
+                position: sticky;
+                top: 0;
+            }
+            .logo-text {
+                font-size: 20px;
+            }
+        }
+
+        @media (min-width: 577px) and (max-width: 768px) {
+            .carrito-flotante {
+                bottom: 85px;
+                right: 20px;
+            }
+            .carrito-panel {
+                width: 360px;
+                right: 20px;
+                bottom: 160px;
+                max-height: 450px;
+            }
+            .carrito-toggle {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+            .producto-imagen {
+                height: 240px;
+            }
+            .producto-carousel .carousel-item img {
+                height: 240px;
+            }
+            .whatsapp-float {
+                bottom: 165px;
+                right: 20px;
+            }
+            .whatsapp-button {
+                width: 55px;
+                height: 55px;
+                font-size: 28px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 992px) {
+            .carrito-panel {
+                width: 370px;
+            }
+            .producto-imagen {
+                height: 260px;
+            }
+            .producto-carousel .carousel-item img {
+                height: 260px;
+            }
+        }
+
+        /* Evitar conflicto con back-to-top */
+        .back-to-top {
+            bottom: 20px !important;
+            right: 30px !important;
+        }
+
+        /* Ajustes adicionales para mejorar experiencia móvil */
+        @media (max-width: 576px) {
+            .container-fluid {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            .header-catalogo .px-4 {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+            .catalogo-principal .px-4 {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+        }
+
+        /* Ajustes para tablets en orientación horizontal */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+            .productos-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .hero-busqueda {
+                padding: 30px 20px;
+            }
+            .titulo-principal {
+                font-size: 2rem;
+            }
+        }
+
+        /* Mejoras para accesibilidad táctil en móviles */
+        @media (max-width: 768px) {
+            button, .btn, a.btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            .filter-chip {
+                min-height: 44px;
+            }
         }
     </style>
 </head>
@@ -104,131 +869,103 @@
     <!-- Spinner End -->
 
 
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-dark px-5">
-        <div class="row gx-4 d-none d-lg-flex">
-            <div class="col-lg-6 text-start">
-                <div class="h-100 d-inline-flex align-items-center py-3 me-4">
-                    <div class="btn-sm-square rounded-circle bg-primary me-2">
-                        <small class="far fa-building text-white"></small>
-                    </div>
-                    <small>RUC: 20601297541</small>
+    <!-- Header Minimalista Start -->
+    <header class="header-catalogo">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center py-3">
+                <div class="col-6 col-md-3">
+                    <a href="index.html" class="logo-link d-flex align-items-center">
+                        <img src="img/iconos/logoConeri.png" alt="CONERI" height="40">
+                        <span class="logo-text ms-2">CONERI</span>
+                    </a>
                 </div>
-                <div class="h-100 d-inline-flex align-items-center py-3">
-                    <div class="btn-sm-square rounded-circle bg-primary me-2">
-                        <small class="fa fa-envelope-open text-white"></small>
-                    </div>
-                    <small>coneri.eirl@gmail.com</small>
-                </div>
-            </div>
-            <div class="col-lg-6 text-end">
-                <div class="h-100 d-inline-flex align-items-center py-3 me-4">
-                    <div class="btn-sm-square rounded-circle bg-primary me-2">
-                        <small class="fa fa-phone-alt text-white"></small>
-                    </div>
-                    <small>+51 941830829</small>
-                </div>
-                <div class="h-100 d-inline-flex align-items-center py-3">
-                    <div class="btn-sm-square rounded-circle bg-primary me-2">
-                        <small class="far fa-clock text-white"></small>
-                    </div>
-                    <small>Lun - Sab : 9AM - 9PM</small>
+                <div class="col-6 col-md-9 text-end">
+                    <a href="tel:+51941830829" class="btn-contact d-none d-md-inline-flex">
+                        <i class="fab fa-whatsapp me-2"></i>
+                        <span>941 830 829</span>
+                    </a>
+                    <a href="https://api.whatsapp.com/send?phone=51941830829" class="btn-contact-mobile d-inline-flex d-md-none">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Topbar End -->
-
-
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 px-4 px-lg-5">
-        <a href="index.html" class="navbar-brand d-flex align-items-center">
-            <img src="img/iconos/logoConeri.png" class="logo">
-            <h2 class="m-0 text-primary">CONERI</h2>
-        </a>
-        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto py-4 py-lg-0">
-                <a href="index.html" class="nav-item nav-link">Inicio</a>
-                <a href="about.html" class="nav-item nav-link">Nosotros</a>
-                <a href="service.html" class="nav-item nav-link">Servicios</a>
-                <a href="project.html" class="nav-item nav-link">Proyectos</a>
-                <a href="catalogo.html" class="nav-item nav-link active">Catálogo</a>
-                <!-- <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Productos</a>
-                    <div class="dropdown-menu rounded-0 rounded-bottom m-0">
-                        <a href="feature.html" class="dropdown-item">Feature</a>
-                        <a href="quote.html" class="dropdown-item">Free Quote</a>
-                        <a href="team.html" class="dropdown-item">Our Team</a>
-                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                        <a href="404.html" class="dropdown-item">404 Page</a>
-                    </div>
-                </div> -->
-                <a href="contact.html" class="nav-item nav-link">Contacto</a>
-            </div>
-            <div class="h-100 d-lg-inline-flex align-items-center d-none">
-                <a class="btn btn-square rounded-circle bg-light text-primary me-2" href="https://www.facebook.com/Coneripiura" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                <a class="btn btn-square rounded-circle bg-light text-primary me-2" href="https://api.whatsapp.com/send?phone=51941830829&text=Hola%20requiero%20informaci%C3%B3n%20de%20sus%20servicios%20en%20sistemas%20fotovoltaicos" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                <a class="btn btn-square rounded-circle bg-light text-primary me-2" href="https://www.linkedin.com/in/jilmer-leonel-parrilla-calle-2960b834/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                <a class="btn btn-square rounded-circle bg-light text-primary me-0" href="https://www.tiktok.com/@jilmer941830829" target="_blank"><i class="fab fa-tiktok"></i></a>
-            </div>
-        </div>
-    </nav>
-    <!-- Navbar End -->
-
-
-    <!-- Page Header Start -->
-    <div class="container-fluid page-header py-5 mb-5">
-        <div class="container py-5">
-            <h1 class="display-3 text-white mb-3 animated slideInDown">Catálogo de Productos</h1>
-            <nav aria-label="breadcrumb animated slideInDown">
-                <p class="breadcrumb text-white">
-                    "Descubre nuestra amplia gama de productos para sistemas fotovoltaicos: paneles solares de alta eficiencia, inversores de última generación, baterías de almacenamiento y todos los accesorios que necesitas para tu proyecto de energía renovable. Calidad garantizada y asesoría técnica especializada."
-                </p>
-            </nav>
-        </div>
-    </div>
-    <!-- Page Header End -->
+    </header>
+    <!-- Header Minimalista End -->
 
 
     <!-- Catálogo Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
-                <h1 class="display-5 mb-4">Nuestros Productos</h1>
-            </div>
+    <div class="catalogo-principal">
+        <div class="container-fluid px-4 py-4">
 
-            <!-- Barra de Búsqueda -->
-            <div class="search-box wow fadeInUp" data-wow-delay="0.2s">
-                <div class="input-group mb-4">
-                    <input type="text" class="form-control" id="buscar-producto" placeholder="Buscar productos...">
-                    <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <!-- Hero de Búsqueda -->
+            <div class="hero-busqueda mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8 mx-auto text-center mb-4">
+                        <h1 class="titulo-principal mb-2">Encuentra tu Solución Solar</h1>
+                        <p class="subtitulo-principal">Productos de calidad para sistemas fotovoltaicos</p>
+                    </div>
+                </div>
+
+                <!-- Barra de Búsqueda Principal -->
+                <div class="row">
+                    <div class="col-md-10 col-lg-8 mx-auto">
+                        <div class="search-principal">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text"
+                                   class="form-control-search"
+                                   id="buscar-producto"
+                                   placeholder="¿Qué necesitas? Panel solar, inversor, batería...">
+                            <button class="btn-search" type="button">
+                                Buscar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Filtros de Categorías -->
-            <div class="row mt-n2">
-                <div class="col-12 text-center">
-                    <ul class="list-inline mb-5 catalogo-filters" id="catalogo-filters">
-                        <li class="mx-2 active filter-active" data-filter="*">Todos</li>
-                        <li class="mx-2" data-filter=".paneles">Paneles Solares</li>
-                        <li class="mx-2" data-filter=".inversores">Inversores</li>
-                        <li class="mx-2" data-filter=".baterias">Baterías</li>
-                        <li class="mx-2" data-filter=".estructuras">Estructuras</li>
-                        <li class="mx-2" data-filter=".cables">Cables</li>
-                        <li class="mx-2" data-filter=".bombas">Bombas</li>
-                        <li class="mx-2" data-filter=".accesorios">Accesorios</li>
-                    </ul>
+            <!-- Filtros Horizontales Sticky -->
+            <div class="filtros-sticky">
+                <div class="filtros-container" id="catalogo-filters">
+                    <button class="filter-chip active" data-filter="*">
+                        <i class="fas fa-th"></i>
+                        <span>Todos</span>
+                    </button>
+                    <button class="filter-chip" data-filter=".paneles">
+                        <i class="fas fa-solar-panel"></i>
+                        <span>Paneles</span>
+                    </button>
+                    <button class="filter-chip" data-filter=".inversores">
+                        <i class="fas fa-bolt"></i>
+                        <span>Inversores</span>
+                    </button>
+                    <button class="filter-chip" data-filter=".baterias">
+                        <i class="fas fa-battery-three-quarters"></i>
+                        <span>Baterías</span>
+                    </button>
+                    <button class="filter-chip" data-filter=".estructuras">
+                        <i class="fas fa-wrench"></i>
+                        <span>Estructuras</span>
+                    </button>
+                    <button class="filter-chip" data-filter=".cables">
+                        <i class="fas fa-plug"></i>
+                        <span>Cables</span>
+                    </button>
+                    <button class="filter-chip" data-filter=".bombas">
+                        <i class="fas fa-tint"></i>
+                        <span>Bombas</span>
+                    </button>
+                    <button class="filter-chip" data-filter=".accesorios">
+                        <i class="fas fa-cog"></i>
+                        <span>Accesorios</span>
+                    </button>
                 </div>
             </div>
 
             <!-- Contenedor dinámico de productos -->
-            <div class="row g-4 productos-container" id="productos-container">
+            <div class="productos-container" id="productos-container">
                 <!-- Los productos se cargarán dinámicamente desde Firestore -->
-                <div class="col-12 text-center">
+                <div style="grid-column: 1/-1; text-align: center;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Cargando productos...</span>
                     </div>
@@ -237,71 +974,235 @@
         </div>
     </div>
     <!-- Catálogo End -->
-        
 
- <!-- Footer Start -->
- <div class="container-fluid bg-dark text-secondary footer mt-5 py-5">
-    <div class="container py-5">
-        <div class="row g-5">
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-light mb-4">Dirección</h5>
-                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Piura | Lima</p>
-                <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+51 941830829</p>
-                <p class="mb-2"><i class="fa fa-envelope me-3"></i>coneri.eirl@gmail.com</p>
-                <div class="d-flex pt-2">
-                    <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://www.facebook.com/Coneripiura" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://api.whatsapp.com/send?phone=51941830829&text=Hola%20requiero%20informaci%C3%B3n%20de%20sus%20servicios%20en%20sistemas%20fotovoltaicos" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                    <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://www.linkedin.com/in/jilmer-leonel-parrilla-calle-2960b834/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                    <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://www.tiktok.com/@jilmer941830829" target="_blank"><i class="fab fa-tiktok"></i></a>
+    <!-- Carrito Flotante Start -->
+    <div class="carrito-flotante" id="carrito-flotante">
+        <button class="carrito-toggle" id="carrito-toggle" type="button">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="carrito-badge" id="carrito-flotante-badge">0</span>
+        </button>
+
+        <div class="carrito-panel" id="carrito-panel">
+            <div class="carrito-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-shopping-cart me-2"></i>
+                    Mi Cotización
+                </h5>
+                <button class="btn-close-carrito" id="btn-close-carrito">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="carrito-body" id="carrito-body">
+                <div class="empty-cart text-center py-5">
+                    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Tu carrito está vacío</p>
+                    <small class="text-muted">Agrega productos para solicitar una cotización</small>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-light mb-4">Servicios</h5>
-                <a class="btn btn-link" href="#">Dimensionamiento</a>
-                <a class="btn btn-link" href="#">Suministro</a>
-                <a class="btn btn-link" href="#">Instalación</a>
-                <a class="btn btn-link" href="#">Mantenimiento</a>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-light mb-4">Enlaces Rápidos</h5>
-                <a class="btn btn-link" href="/about.html">Nosotros</a>
-                <a class="btn btn-link" href="/contact.html">Contacto</a>
-                <a class="btn btn-link" href="/service.html">Servicios</a>
-                <a class="btn btn-link" href="/project.html">Proyectos</a>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <p>"El sol es una fuente inagotable de energía, y al utilizar paneles solares estás aprovechando su poder para impulsar un futuro más limpio y sostenible. ¡Únete a la revolución renovable y convierte tu hogar o empresa en un ejemplo de energía limpia y eficiente!"</p>
+
+            <div class="carrito-footer">
+                <button class="btn btn-success w-100 mb-2" id="btn-cotizar-whatsapp" onclick="event.stopPropagation(); carritoCompras.enviarWhatsApp()">
+                    <i class="fab fa-whatsapp me-2"></i>
+                    Enviar Cotización por WhatsApp
+                </button>
+                <button class="btn btn-outline-danger w-100" onclick="event.stopPropagation(); limpiarCarritoUI()">
+                    <i class="fas fa-trash me-2"></i>
+                    Limpiar Carrito
+                </button>
             </div>
         </div>
     </div>
-</div>
-<!-- Footer End -->
+    <!-- Carrito Flotante End -->
 
+    <!-- WhatsApp Flotante Start -->
+    <div class="whatsapp-float">
+        <a href="https://api.whatsapp.com/send?phone=51941830829&text=Hola,%20quiero%20información%20sobre%20sus%20productos%20solares"
+           target="_blank"
+           class="whatsapp-button"
+           title="¿Necesitas ayuda? Escríbenos">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+    <!-- WhatsApp Flotante End -->
 
-    <!-- Copyright Start -->
-    <div class="container-fluid py-4" style="background: #000000;">
-        <div class="container">
-            <div class="row">
+    <!-- Footer Minimalista Start -->
+    <footer class="footer-catalogo">
+        <div class="container py-4">
+            <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="https://coneri.pe/">coneri.pe</a>, Todos los derechos reservados.
+                    <p class="mb-0 text-muted small">
+                        © 2024 <strong>CONERI</strong> - Energía Solar en Perú
+                    </p>
                 </div>
-                <div class="col-md-6 text-center text-md-end" style="display: none">
-                    <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                    Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a><br>Distributed By <a class="border-bottom" href="https://themewagon.com/" >Themewagon</a>
-                </div>
-                
                 <div class="col-md-6 text-center text-md-end">
-                    <p class="by">Made with ♥ by. <a href="https://www.linkedin.com/in/danielmoranv/" target="_blank">Daniel Moran</a></p>
+                    <a href="https://www.facebook.com/Coneripiura" target="_blank" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://api.whatsapp.com/send?phone=51941830829" target="_blank" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://www.linkedin.com/in/jilmer-leonel-parrilla-calle-2960b834/" target="_blank" class="social-link"><i class="fab fa-linkedin-in"></i></a>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Copyright End -->
+    </footer>
+    <!-- Footer Minimalista End -->
 
 
 <!-- Back to Top -->
 <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
 
+<script>
+// Control del Carrito Flotante
+document.addEventListener('DOMContentLoaded', function() {
+    const carritoToggle = document.getElementById('carrito-toggle');
+    const carritoPanel = document.getElementById('carrito-panel');
+    const btnCloseCarrito = document.getElementById('btn-close-carrito');
+
+    // Toggle del panel
+    if (carritoToggle) {
+        carritoToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            carritoPanel.classList.toggle('show');
+            actualizarCarritoUI();
+        });
+    }
+
+    // Cerrar panel
+    if (btnCloseCarrito) {
+        btnCloseCarrito.addEventListener('click', function(e) {
+            e.stopPropagation();
+            carritoPanel.classList.remove('show');
+        });
+    }
+
+    // Cerrar al hacer click fuera
+    document.addEventListener('click', function(e) {
+        // No cerrar si el click es dentro del carrito flotante o sus botones
+        if (!e.target.closest('.carrito-flotante') &&
+            !e.target.closest('.btn-cantidad') &&
+            !e.target.closest('.carrito-item')) {
+            carritoPanel.classList.remove('show');
+        }
+    });
+
+    // Actualizar carrito UI periódicamente
+    setInterval(actualizarCarritoUI, 1000);
+    actualizarCarritoUI();
+});
+
+// Actualizar UI del carrito flotante
+function actualizarCarritoUI() {
+    if (typeof carritoCompras === 'undefined') return;
+
+    const badge = document.getElementById('carrito-flotante-badge');
+    const carritoBody = document.getElementById('carrito-body');
+
+    if (!badge || !carritoBody) return;
+
+    const cantidad = carritoCompras.obtenerCantidadTotal();
+    badge.textContent = cantidad;
+    badge.style.display = cantidad > 0 ? 'flex' : 'none';
+
+    if (cantidad === 0) {
+        carritoBody.innerHTML = `
+            <div class="empty-cart text-center py-5">
+                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <p class="text-muted mb-2">Tu carrito está vacío</p>
+                <small class="text-muted">Agrega productos para solicitar una cotización</small>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+    carritoCompras.items.forEach(item => {
+        const imgSrc = item.imagen || 'https://via.placeholder.com/60x60/65B530/ffffff?text=Producto';
+        html += `
+            <div class="carrito-item">
+                <img src="${imgSrc}"
+                     alt="${item.nombre}"
+                     class="carrito-item-img"
+                     onerror="this.src='https://via.placeholder.com/60x60/65B530/ffffff?text=Sin+Imagen'">
+                <div class="carrito-item-info">
+                    <div class="carrito-item-nombre">${item.nombre}</div>
+                    ${item.precio > 0 ? `<small class="text-primary fw-bold">S/ ${item.precio.toFixed(2)}</small>` : '<small class="text-muted">Consultar precio</small>'}
+                    <div class="carrito-item-cantidad">
+                        <button class="btn-cantidad" onclick="event.stopPropagation(); cambiarCantidad('${item.id}', -1)">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span class="fw-bold">${item.cantidad}</span>
+                        <button class="btn-cantidad" onclick="event.stopPropagation(); cambiarCantidad('${item.id}', 1)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="btn-cantidad ms-auto" onclick="event.stopPropagation(); eliminarDelCarrito('${item.id}')" title="Eliminar">
+                            <i class="fas fa-trash text-danger"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    const total = carritoCompras.obtenerTotal();
+    if (total > 0) {
+        html += `
+            <div class="alert alert-light border mt-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">Total estimado:</span>
+                    <span class="fs-5 text-primary fw-bold">S/ ${total.toFixed(2)}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    carritoBody.innerHTML = html;
+}
+
+// Cambiar cantidad de producto
+function cambiarCantidad(productoId, delta) {
+    const item = carritoCompras.items.find(i => i.id === productoId);
+    if (item) {
+        const nuevaCantidad = item.cantidad + delta;
+        if (nuevaCantidad > 0) {
+            carritoCompras.actualizarCantidad(productoId, nuevaCantidad);
+        } else {
+            carritoCompras.eliminarProducto(productoId);
+        }
+        actualizarCarritoUI();
+    }
+}
+
+// Eliminar del carrito
+function eliminarDelCarrito(productoId) {
+    if (confirm('¿Eliminar este producto del carrito?')) {
+        carritoCompras.eliminarProducto(productoId);
+        actualizarCarritoUI();
+    }
+}
+
+// Limpiar carrito UI
+function limpiarCarritoUI() {
+    if (confirm('¿Estás seguro de vaciar el carrito?')) {
+        carritoCompras.limpiarCarrito();
+        actualizarCarritoUI();
+    }
+}
+
+// Override agregarAlCarrito para actualizar UI inmediatamente
+const originalAgregarAlCarrito = window.agregarAlCarrito;
+window.agregarAlCarrito = async function(productoId) {
+    await originalAgregarAlCarrito(productoId);
+    setTimeout(() => {
+        actualizarCarritoUI();
+        // Mostrar panel brevemente
+        const panel = document.getElementById('carrito-panel');
+        if (panel) {
+            panel.classList.add('show');
+            setTimeout(() => {
+                panel.classList.remove('show');
+            }, 2000);
+        }
+    }, 100);
+};
+</script>
 
 </body>
 

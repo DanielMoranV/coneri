@@ -4,10 +4,10 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>CONERI Energías Renovables | Paneles Solares Perú | Panel Solar Lima | Paneles solares Piura</title>
+    <title>CONERI - Casos de Éxito | Proyectos de Paneles Solares en Perú</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Panel solar piura, paneles solares peru, energias renovables, compra de paneles solares, coneri.pe," name="keywords">
-    <meta content="CONERI empresa dedicada al rubro de la energia renovable (paneles solares)" name="description">
+    <meta content="casos de exito paneles solares, proyectos solares peru, instalaciones fotovoltaicas, energias renovables, coneri.pe," name="keywords">
+    <meta content="Conoce nuestros casos de éxito en proyectos de energía solar en todo el Perú. CONERI empresa líder en energías renovables." name="description">
 
     <!-- Favicon -->
     <link href="img/iconos/logoConeri.png" rel="icon">
@@ -33,7 +33,9 @@
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 
-        
+    <!-- Estilos específicos para Casos de Éxito -->
+    <link href="css/project-styles.css" rel="stylesheet">
+
     <!-- JavaScript Libraries -->
     <script defer src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -45,17 +47,20 @@
     <script defer src="lib/isotope/isotope.pkgd.min.js"></script>
     <script defer src="lib/lightbox/js/lightbox.min.js"></script>
 
-    <!-- Template Javascript -->
+    <!-- Firebase (PRIMERO, sin defer para garantizar orden) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Firebase Config (SEGUNDO) -->
+    <script src="js/firebase-config.js"></script>
+
+    <!-- Scripts de Proyectos (TERCERO) -->
+    <script src="js/proyectos.js"></script>
+
+    <!-- Template Javascript (ÚLTIMO) -->
     <script defer src="js/main.js"></script>
-
-    <!-- Firebase -->
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <!-- Firebase Config y Scripts de Proyectos -->
-    <script defer src="js/firebase-config.js"></script>
-    <script defer src="js/proyectos.js"></script>
 </head>
 
 <body>
@@ -118,7 +123,7 @@
                 <a href="index.html" class="nav-item nav-link">Inicio</a>
                 <a href="about.html" class="nav-item nav-link">Nosotros</a>
                 <a href="service.html" class="nav-item nav-link">Servicios</a>
-                <a href="project.html" class="nav-item nav-link active">Proyectos</a>
+                <a href="project.html" class="nav-item nav-link active">Casos de Éxito</a>
                 <a href="catalogo.html" class="nav-item nav-link">Catálogo</a>
                 <!-- <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Productos</a>
@@ -144,47 +149,34 @@
 
 
     <!-- Page Header Start -->
-    <div class="container-fluid page-header py-5 mb-5">
-        <div class="container py-5">
-            <h1 class="display-3 text-white mb-3 animated slideInDown">Proyectos</h1>
-            <nav aria-label="breadcrumb animated slideInDown">
-                <!-- <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
-                    <li class="breadcrumb-item text-white active" aria-current="page">Projects</li>
-                </ol> -->
-                <p class="breadcrumb text-white">
-                    "Con orgullo podemos decir que hemos logrado culminar numerosos proyectos de energías renovables con éxito, brindando soluciones innovadoras y eficientes a nuestros clientes y contribuyendo al cuidado del planeta. ¡Únete a nuestra lista de clientes satisfechos y vive la experiencia de un proyecto exitoso con nosotros!"
-                </p>
-            </nav>
+    <div class="container-fluid page-header py-4 mb-4">
+        <div class="container py-3">
+            <h1 class="display-4 text-white mb-2 animated slideInDown">Casos de Éxito</h1>
+            <p class="text-white mb-0 animated slideInDown" style="font-size: 1.1rem; max-width: 800px; margin: 0 auto;">
+                Descubre nuestros proyectos exitosos de energía solar en todo el Perú
+            </p>
         </div>
     </div>
     <!-- Page Header End -->
 
 
     <!-- Projects Start -->
-    <div class="container-xxl py-5">
+    <div class="container-xxl py-5 page-proyectos">
         <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <div class="bg-primary mb-3 mx-auto" style="width: 60px; height: 2px;"></div>
-                <h1 class="display-5 mb-5">Nuestros Proyectos</h1>
+
+            <!-- Filtros -->
+            <div class="casos-filtros wow fadeInUp" data-wow-delay="0.2s">
+                <button class="filtro-btn active" data-filtro="todos">Todos</button>
+                <button class="filtro-btn" data-filtro="culminado">Proyectos Culminados</button>
+                <button class="filtro-btn" data-filtro="en-marcha">Proyectos en Marcha</button>
             </div>
-            <div class="row mt-n2">
-                <div class="col-12 text-center">
-                    <ul class="list-inline mb-5 portfolio-flters" id="portfolio-flters">
-                        <li class="mx-2 active filter-active" data-filter="*">Todos</li>
-                        <li class="mx-2" data-filter=".first">Proyectos culminados</li>
-                        <li class="mx-2" data-filter=".second">Proyectos en marcha</li>
-                    </ul>
-                </div>
-            </div>
-            <!-- Contenedor dinámico de proyectos -->
-            <div class="row g-4 portfolio-container" id="proyectos-container">
-                <!-- Los proyectos se cargarán dinámicamente desde Firestore -->
-                <div class="col-12 text-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando proyectos...</span>
-                    </div>
+
+            <!-- Grid de Proyectos -->
+            <div class="casos-exito-grid" id="casos-container">
+                <!-- Loading inicial -->
+                <div class="casos-loading">
+                    <div class="spinner"></div>
+                    <p>Cargando casos de éxito...</p>
                 </div>
             </div>
         </div>
@@ -193,14 +185,13 @@
         
 
  <!-- Footer Start -->
- <div class="container-fluid bg-dark text-secondary footer mt-5 py-5">
-    <div class="container py-5">
-        <div class="row g-5">
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-light mb-4">Dirección</h5>
-                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Piura | Lima</p>
-                <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+51 941830829</p>
-                <p class="mb-2"><i class="fa fa-envelope me-3"></i>coneri.eirl@gmail.com</p>
+ <div class="container-fluid bg-dark text-secondary footer mt-5 py-4">
+    <div class="container py-3">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <h5 class="text-light mb-3">Contacto</h5>
+                <p class="mb-2"><i class="fa fa-phone-alt me-2"></i>+51 941830829</p>
+                <p class="mb-2"><i class="fa fa-envelope me-2"></i>coneri.eirl@gmail.com</p>
                 <div class="d-flex pt-2">
                     <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://www.facebook.com/Coneripiura" target="_blank"><i class="fab fa-facebook-f"></i></a>
                     <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://api.whatsapp.com/send?phone=51941830829&text=Hola%20requiero%20informaci%C3%B3n%20de%20sus%20servicios%20en%20sistemas%20fotovoltaicos" target="_blank"><i class="fab fa-whatsapp"></i></a>
@@ -208,22 +199,18 @@
                     <a class="btn btn-square btn-outline-secondary rounded-circle me-2" href="https://www.tiktok.com/@jilmer941830829" target="_blank"><i class="fab fa-tiktok"></i></a>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-light mb-4">Servicios</h5>
-                <a class="btn btn-link" href="#">Dimensionamiento</a>
-                <a class="btn btn-link" href="#">Suministro</a>
-                <a class="btn btn-link" href="#">Instalación</a>
-                <a class="btn btn-link" href="#">Mantenimiento</a>
+            <div class="col-lg-4 col-md-6">
+                <h5 class="text-light mb-3">Enlaces</h5>
+                <div class="d-flex flex-wrap gap-3">
+                    <a class="btn btn-link p-0" href="index.html">Inicio</a>
+                    <a class="btn btn-link p-0" href="about.html">Nosotros</a>
+                    <a class="btn btn-link p-0" href="service.html">Servicios</a>
+                    <a class="btn btn-link p-0" href="contact.html">Contacto</a>
+                </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-light mb-4">Enlaces Rápidos</h5>
-                <a class="btn btn-link" href="/about.html">Nosotros</a>
-                <a class="btn btn-link" href="/contact.html">Contacto</a>
-                <a class="btn btn-link" href="/service.html">Servicios</a>
-                <a class="btn btn-link" href="/project.html">Proyectos</a>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <p>"El sol es una fuente inagotable de energía, y al utilizar paneles solares estás aprovechando su poder para impulsar un futuro más limpio y sostenible. ¡Únete a la revolución renovable y convierte tu hogar o empresa en un ejemplo de energía limpia y eficiente!"</p>
+            <div class="col-lg-4 col-md-12">
+                <h5 class="text-light mb-3">CONERI E.I.R.L.</h5>
+                <p class="mb-0">Energías Renovables para un futuro sostenible</p>
             </div>
         </div>
     </div>
