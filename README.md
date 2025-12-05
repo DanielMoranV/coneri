@@ -16,6 +16,13 @@ Sistema web completo para la empresa CONERI, especializada en soluciones de ener
 - Galería dinámica de proyectos realizados
 - Carga automática desde Firebase
 - Imágenes optimizadas con Cloudinary
+- Herramienta de migración de datos (`migration-data.html`)
+
+✅ **Gestión de Imágenes Avanzada**
+- Integración nativa con Cloudinary
+- Eliminación automática de imágenes huérfanas
+- Scripts de mantenimiento y limpieza
+- Triggers de Cloud Functions para limpieza automática
 
 ✅ **Panel de Administración**
 - Autenticación segura con Firebase Auth
@@ -74,6 +81,18 @@ firebase use proyecto-coneri
 firebase deploy
 ```
 
+### **5. Desplegar Cloud Functions**
+Si realizaste cambios en las funciones backend:
+```bash
+firebase deploy --only functions
+```
+
+### **6. Scripts de Mantenimiento**
+Para configurar los scripts de limpieza de imágenes:
+1. Ve a la carpeta `scripts/`
+2. Sigue las instrucciones en `scripts/README.md`
+
+
 📖 **Instrucciones detalladas:** [Ver Guía de Deploy](./docs/deployment/INSTRUCCIONES_DEPLOY.md)
 
 ---
@@ -82,12 +101,13 @@ firebase deploy
 
 | Categoría | Tecnologías |
 |-----------|-------------|
-| **Frontend** | HTML5, CSS3, JavaScript (Vanilla) |
+| **Frontend** | HTML5, SCSS/CSS3, JavaScript (Vanilla) |
 | **Backend** | Firebase (Firestore, Storage, Auth, Functions) |
-| **CDN Imágenes** | Cloudinary |
+| **CDN Imágenes** | Cloudinary API |
 | **Framework CSS** | Bootstrap 5 |
 | **Animaciones** | WOW.js, Animate.css |
 | **Iconos** | Font Awesome 6 |
+| **Mantenimiento** | Node.js Scripts |
 
 ---
 
@@ -99,19 +119,40 @@ coneri-1/
 ├── js/                       # 📜 JavaScript
 │   ├── firebase-config.js
 │   ├── admin.js
+│   ├── admin-cloudinary.js   # ☁️ Gestión Cloudinary
 │   ├── productos.js
 │   ├── proyectos.js
 │   ├── carrito.js
 │   └── cloudinary-config.js
 ├── functions/                # ☁️ Cloud Functions
-├── css/                      # 🎨 Estilos
-├── img/                      # 🖼️ Imágenes
+│   ├── index.js              # ⚡ Triggers y API
+│   └── package.json
+├── scripts/                  # 🛠️ Scripts de Mantenimiento
+│   ├── limpiar-imagenes...   # 🧹 Limpieza de huérfanas
+│   └── README.md
+├── scss/                     # 🎨 Estilos SASS
+├── css/                      # 🎨 Estilos compilados
+├── img/                      # 🖼️ Imágenes estáticas
 ├── index.html               # 🏠 Página principal
 ├── admin.html               # 🔐 Panel admin
 ├── catalogo.html            # 🛒 Catálogo
 ├── project.html             # 📁 Proyectos
+├── migration-data.html      # 🔄 Herramienta de migración
 └── firebase.json            # ⚙️ Config Firebase
 ```
+
+---
+
+## ☁️ Cloud Functions
+
+El proyecto incluye funciones serverless para mantener la integridad de los datos:
+
+- **`eliminarImagenCloudinary`**: API para eliminar imágenes individuales.
+- **`eliminarImagenesCloudinary`**: API para eliminación en lote.
+- **`onEliminarProyecto`**: Trigger que elimina imágenes cuando se borra un proyecto.
+- **`onEliminarProducto`**: Trigger que elimina imágenes cuando se borra un producto.
+- **`onActualizarProyecto`**: Trigger que limpia imágenes antiguas al actualizar un proyecto.
+- **`onActualizarProducto`**: Trigger que limpia imágenes antiguas al actualizar un producto.
 
 ---
 
@@ -165,4 +206,4 @@ coneri-1/
 
 ---
 
-**Última actualización:** 2024-11-27
+**Última actualización:** 2025-12-04
