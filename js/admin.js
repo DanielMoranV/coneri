@@ -181,10 +181,13 @@ function obtenerMensajeError(codigo) {
         'auth/user-disabled': 'Usuario deshabilitado',
         'auth/user-not-found': 'Usuario no encontrado',
         'auth/wrong-password': 'Contraseña incorrecta',
+        'auth/invalid-credential': 'Las credenciales proporcionadas son incorrectas.',
+        'auth/invalid-login-credentials': 'Las credenciales proporcionadas son incorrectas.',
         'auth/email-already-in-use': 'El correo ya está en uso',
         'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres',
         'auth/network-request-failed': 'Error de conexión. Verifica tu internet.',
-        'auth/requires-recent-login': 'Debes iniciar sesión nuevamente para realizar esta acción'
+        'auth/requires-recent-login': 'Debes iniciar sesión nuevamente para realizar esta acción',
+        'auth/internal-error': 'Error interno del servidor. Inténtalo de nuevo más tarde.'
     };
     return errores[codigo] || 'Error al procesar la solicitud';
 }
