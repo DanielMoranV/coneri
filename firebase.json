@@ -10,7 +10,9 @@
       "functions/**",
       "*.md",
       "LICENSE.txt",
-      "READ-ME.txt"
+      "READ-ME.txt",
+      "migration-data.html",
+      "cors.json"
     ],
     "rewrites": [
       {

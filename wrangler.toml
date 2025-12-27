@@ -1,0 +1,6 @@
+name = "coneri"
+compatibility_date = "2024-12-26"
+
+# Este archivo es opcional si despliegas desde el dashboard de Cloudflare
+# Solo es necesario si usas: npx wrangler pages deploy
+

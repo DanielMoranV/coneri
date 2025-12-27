@@ -64,3 +64,13 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+# Project specific
+docs/
+scss/
+migration-data.html
+cors.json
+READ-ME.txt
+LICENSE.txt
+*.md
+!README.md

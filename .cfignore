@@ -1,0 +1,26 @@
+# Archivos y carpetas que Cloudflare Pages NO debe subir
+
+# Documentación
+docs/
+*.md
+!README.md
+
+# Archivos de desarrollo
+scss/
+scripts/
+
+# Firebase (ya no se usa)
+functions/
+.firebase/
+firebase.json
+firestore.rules
+storage.rules
+.firebaserc
+
+# Control de versiones
+.git/
+.gitignore
+
+# Configuración
+wrangler.toml
+LICENSE.txt
